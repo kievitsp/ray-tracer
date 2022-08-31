@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.10"
+    java
     id("com.bnorm.power.kotlin-power-assert") version "0.12.0"
 }
 
@@ -25,12 +26,29 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-suite")
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
 
-tasks.test {
-    useJUnitPlatform()
-    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+    }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+tasks {
+
+    test {
+        useJUnitPlatform()
+        systemProperty("cucumber.junit-platform.naming-strategy", "long")
+//        jvmArgs!!.add("--add-modules=jdk.incubator.vector")
+        jvmArgs("--add-modules=jdk.incubator.vector")
+
+    }
+
+    withType<JavaCompile> {
+        options.release.set(17)
+        options.compilerArgs.add("--add-modules=jdk.incubator.vector")
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 }
