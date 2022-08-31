@@ -13,7 +13,7 @@ class CanvasTest {
         val c = Canvas(10, 20)
         assert(c.width == 10)
         assert(c.height == 20)
-        c.forEach { assert(it == Color(0, 0, 0)) }
+        c.forEach { assert(it approx Color(0, 0, 0)) }
     }
 
     @Test

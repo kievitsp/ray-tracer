@@ -3,12 +3,11 @@ package uk.co.kievits.raytracer.model
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import io.cucumber.java8.PendingException
-import org.jetbrains.kotlinx.multik.api.linalg.dot
-import org.jetbrains.kotlinx.multik.api.mk
-import org.jetbrains.kotlinx.multik.api.ndarray
-import org.jetbrains.kotlinx.multik.ndarray.data.NDArray
-import org.jetbrains.kotlinx.multik.ndarray.data.get
-import org.jetbrains.kotlinx.multik.ndarray.operations.*
+import kotlin.collections.contentToString
+import kotlin.collections.joinToString
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 import kotlin.math.sqrt
 
 
@@ -30,10 +29,25 @@ class StepDefs : En {
 
         DataTableType { dataTable: DataTable ->
             val height = dataTable.height()
-            val rows = (0 until height).map { row ->
-                dataTable.row(row).map { cells -> cells.toDouble() }.toDoubleArray()
-            }.toTypedArray()
-            mk.ndarray(rows)
+            val width = dataTable.width()
+
+            val array = FloatArray(height * width) { id ->
+                val row = id / width
+                val column = id % width
+                dataTable.row(row)[column].toFloat()
+            }
+
+//            val rows: Array<FloatArray> = (0 until height).map { row ->
+//                dataTable.row(row).map { cells -> cells.toFloat() }.toFloatArray()
+//            }.toTypedArray()
+//            mk.ndarray(rows)
+            when (array.size) {
+                16 -> Matrix.D4(array)
+                9 -> Matrix.D3(array)
+                4 -> Matrix.D2(array)
+                else -> TODO(array.contentToString())
+            }
+
         }
 
         ParameterType(
@@ -41,12 +55,12 @@ class StepDefs : En {
             "(tuple|vector|point|color)\\((.*?)\\)|([a-z]\\w*)",
         ) { type: String?, args: String?, name: String? ->
             if (args != null && type != null) {
-                val doubles = args.split(numberSplitter).map { it.toDouble() }
+                val floats = args.split(numberSplitter).map { it.toFloat() }
                 when (type) {
-                    "tuple" -> Tuple(doubles[0], doubles[1], doubles[2], doubles[3])
-                    "point" -> Point(doubles[0], doubles[1], doubles[2])
-                    "vector" -> Vector(doubles[0], doubles[1], doubles[2])
-                    "color" -> Color(doubles[0], doubles[1], doubles[2])
+                    "tuple" -> Tuple(floats[0], floats[1], floats[2], floats[3])
+                    "point" -> Point(floats[0], floats[1], floats[2])
+                    "vector" -> Vector(floats[0], floats[1], floats[2])
+                    "color" -> Color(floats[0], floats[1], floats[2])
                     else -> TODO(type)
                 }
             } else if (name != null) {
@@ -61,8 +75,8 @@ class StepDefs : En {
             "canvas\\((.*?)\\)|([a-z]\\w*)",
         ) { args: String?, second: String? ->
             if (args != null) {
-                val doubles = args.split(numberSplitter).map { it.toInt() }
-                Canvas(doubles[0], doubles[1])
+                val floats = args.split(numberSplitter).map { it.toInt() }
+                Canvas(floats[0], floats[1])
             } else if (second != null) {
                 getVar<CANVAS>(second)
             } else {
@@ -89,11 +103,19 @@ class StepDefs : En {
         }
 
         ParameterType(
-            "mVar", "[A-Z]\\w*|IDENTITY_MATRIX"
-        ) { name ->
-            when (name) {
-                "IDENTITY_MATRIX" -> IdentityMatrix()
-                else -> getVar<MATRIX>(name)
+            "mVar", "([A-Z]\\w*|IDENTITY_MATRIX)|(translation)\\((.*?)\\)"
+        ) { name, function, args ->
+            when(function) {
+                null ->
+                    when (name) {
+                        "IDENTITY_MATRIX" -> IdentityMatrix()
+                        else -> getVar<MATRIX>(name)
+                    }
+                "translation" -> {
+                    val floats = args.split(numberSplitter).map { it.toFloat() }
+                    translation(floats[0], floats[1], floats[2])
+                }
+                else -> TODO(function)
             }
         }
 
@@ -101,11 +123,11 @@ class StepDefs : En {
             "number", "(√)?(-?\\d+(\\.\\d+)?)|(-?\\d+/-?\\d+)"
         ) { sqrt: String?, value: String?, division: String? ->
             if (value != null) {
-                val double = value.toDouble()
-                if (sqrt == null) double else sqrt(double)
+                val float = value.toFloat()
+                if (sqrt == null) float else sqrt(float)
             } else if (division != null) {
-                val doubles = division.split('/').map { it.toDouble() }
-                doubles[0] / doubles[1]
+                val floats = division.split('/').map { it.toFloat() }
+                floats[0] / floats[1]
             } else {
                 TODO()
             }
@@ -113,6 +135,10 @@ class StepDefs : En {
 
         Given("{} ← {tuple}") { name: String, tuple: TUPLE ->
             vars[name] = tuple
+        }
+
+        Given("{} ← {mVar}") { name: String, matrix: MATRIX ->
+            vars[name] = matrix
         }
 
         Given("{} ← {canvas}") { name: String, canvas: CANVAS ->
@@ -126,18 +152,23 @@ class StepDefs : En {
         Given("the following 2x2 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("the following 4x4 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("the following 3x3 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
+
+        Given("{} ← {mVar} * {mVar}") { name: String, m1: MATRIX, m2: MATRIX ->
+            vars[name] = m1 * m2
+        }
+
         Given("the following matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("{} ← transpose\\({mVar})") { name: String, m: MATRIX -> vars[name] = m.transpose() }
         Given("{} ← inverse\\({mVar})") { name: String, m: MATRIX -> vars[name] = m.inverse() }
 
-        Then("{tuple}.x = {double}") { tuple: TUPLE, value: Double -> assert(tuple.x == value) }
-        Then("{tuple}.y = {double}") { tuple: TUPLE, value: Double -> assert(tuple.y == value) }
-        Then("{tuple}.z = {double}") { tuple: TUPLE, value: Double -> assert(tuple.z == value) }
-        Then("{tuple}.w = {double}") { tuple: TUPLE, value: Double -> assert(tuple.w == value) }
+        Then("{tuple}.x = {float}") { tuple: TUPLE, value: Float -> assert(tuple.x == value) }
+        Then("{tuple}.y = {float}") { tuple: TUPLE, value: Float -> assert(tuple.y == value) }
+        Then("{tuple}.z = {float}") { tuple: TUPLE, value: Float -> assert(tuple.z == value) }
+        Then("{tuple}.w = {float}") { tuple: TUPLE, value: Float -> assert(tuple.w == value) }
 
-        Then("{tuple}.red = {double}") { tuple: TUPLE, value: Double -> assert(tuple.red == value) }
-        Then("{tuple}.green = {double}") { tuple: TUPLE, value: Double -> assert(tuple.green == value) }
-        Then("{tuple}.blue = {double}") { tuple: TUPLE, value: Double -> assert(tuple.blue == value) }
+        Then("{tuple}.red = {float}") { tuple: TUPLE, value: Float -> assert(tuple.red == value) }
+        Then("{tuple}.green = {float}") { tuple: TUPLE, value: Float -> assert(tuple.green == value) }
+        Then("{tuple}.blue = {float}") { tuple: TUPLE, value: Float -> assert(tuple.blue == value) }
 
         Then("{canvas}.width = {int}") { canvas: CANVAS, value: Int -> assert(canvas.width == value) }
         Then("{canvas}.height = {int}") { canvas: CANVAS, value: Int -> assert(canvas.height == value) }
@@ -175,7 +206,7 @@ class StepDefs : En {
             )
         }
 
-        Then("{tuple} {operator} {double} = {tuple}") { a: TUPLE, op: Operator, b: Double, c: TUPLE ->
+        Then("{tuple} {operator} {float} = {tuple}") { a: TUPLE, op: Operator, b: Float, c: TUPLE ->
             assert(
                 when (op) {
                     Operator.PLUS -> a + b
@@ -186,11 +217,11 @@ class StepDefs : En {
             )
         }
 
-        Then("magnitude\\({tuple}) = {number}") { value: TUPLE, exp: Double -> assert(value.magnitude == exp) }
+        Then("magnitude\\({tuple}) = {number}") { value: TUPLE, exp: Float -> assert(value.magnitude approx  exp) }
         Then("normalize\\({tuple}) = {tuple}") { value: TUPLE, exp: TUPLE -> assert(value.normalise == exp) }
         Then("normalize\\({tuple}) = approximately {tuple}") { value: TUPLE, exp: TUPLE -> assert(value.normalise approx exp) }
         When("{} ← normalize\\({tuple})") { name: String, exp: TUPLE -> vars[name] = exp.normalise }
-        Then("dot\\({tuple}, {tuple}) = {double}") { a: TUPLE, b: TUPLE, exp: Double -> assert(a dot b == exp) }
+        Then("dot\\({tuple}, {tuple}) = {float}") { a: TUPLE, b: TUPLE, exp: Float -> assert(a dot b == exp) }
         Then("cross\\({tuple}, {tuple}) = {tuple}") { a: TUPLE, b: TUPLE, exp: TUPLE -> assert(a cross b == exp) }
 
         When("write_pixel\\({canvas}, {int}, {int}, {tuple})") { canvas: CANVAS, x: Int, y: Int, c: COLOR ->
@@ -229,12 +260,12 @@ class StepDefs : En {
             assert(ppm.lastOrNull() == '\n')
         }
 
-        Then("{mVar}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Double ->
-            assert(matrix[x, y] == number)
+        Then("{mVar}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Float ->
+            assert(matrix[x, y] approx number)
         }
 
-        Then("{mVar} = {mVar}") { a: MATRIX, b: MATRIX -> assert(a == b) }
-        Then("{mVar} != {mVar}") { a: MATRIX, b: MATRIX -> assert(a != b) }
+        Then("{mVar} = {mVar}") { a: MATRIX, b: MATRIX -> assert(a approx b) }
+        Then("{mVar} != {mVar}") { a: MATRIX, b: MATRIX -> assert(a napprox b) }
 
         Then("{mVar} * {mVar} is the following 4x4 matrix:") { a: MATRIX, b: MATRIX, c: MATRIX ->
             assert(a * b == c)
@@ -252,7 +283,7 @@ class StepDefs : En {
             assert(a.transpose() == b)
         }
 
-        Then("determinant\\({mVar}) = {double}") { a: MATRIX, value: Double ->
+        Then("determinant\\({mVar}) = {float}") { a: MATRIX, value: Float ->
             assert(a.determinant() == value)
         }
 
@@ -271,15 +302,19 @@ class StepDefs : En {
             assert(m approx exp)
         }
 
-        Then("minor\\({mVar}, {int}, {int}) = {double}") { m: MATRIX, x: Int, y: Int, exp: Double ->
+        Then("minor\\({mVar}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
             assert(m.minor(x, y) == exp)
         }
 
-        Then("cofactor\\({mVar}, {int}, {int}) = {double}") { m: MATRIX, x: Int, y: Int, exp: Double ->
+        Then("cofactor\\({mVar}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
             assert(m.cofactor(x, y) == exp)
         }
 
         Then("{mVar} is invertible") { m: MATRIX -> assert(m.isInvertable()) }
         Then("{mVar} is not invertible") { m: MATRIX -> assert(!m.isInvertable()) }
+
+        Then("{mVar} * inverse\\({mVar}) = {mVar}") { mVar: MATRIX, mVar2: MATRIX, mVar3: MATRIX ->
+            assert(mVar * mVar2.inverse() == mVar3)
+        }
     }
 }
