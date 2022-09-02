@@ -4,7 +4,6 @@ import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorMask
 import jdk.incubator.vector.VectorShuffle
 import jdk.incubator.vector.VectorSpecies
-import java.lang.UnsupportedOperationException
 
 sealed class Dimension(
     val size: Int,
@@ -13,7 +12,7 @@ sealed class Dimension(
     val sub: Dimension?,
 ) {
 
-    internal val inversionShuffle = VectorShuffle.fromArray(
+    internal val transposeShuffle = VectorShuffle.fromArray(
         species,
         IntArray(species.length()) { id ->
             val (row, column) = rowAndColumn(id)

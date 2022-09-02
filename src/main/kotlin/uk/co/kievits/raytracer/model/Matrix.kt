@@ -39,8 +39,20 @@ class Matrix<D : Dimension> private constructor(
     private fun row(row: Int): FloatVector = vector.rearrange(dimension.rowShuffles[row])
         .toSpecies(Tuple.SPECIES)
 
+    private fun rows() = buildList {
+        for (rowId in 0 until dimension.width) {
+            add(row(rowId))
+        }
+    }
+
     private fun column(column: Int): FloatVector = vector.rearrange(dimension.columnShuffles[column])
         .toSpecies(Tuple.SPECIES)
+
+    private fun columns() = buildList {
+        for (columnId in 0 until dimension.width) {
+            add(column(columnId))
+        }
+    }
 
     fun inverse(): Matrix<D> {
         require(isInvertable())
@@ -49,31 +61,24 @@ class Matrix<D : Dimension> private constructor(
             val (row, column) = dimension.rowAndColumn(it)
             cofactor(row, column)
         }
-        val matrix = Matrix(new, dimension).transpose()
-        val determinant = determinant()
 
-        return matrix.vector
-            .div(determinant)
-            .toArray()
-            .let { Matrix(it, dimension) }
+        return FloatVector.fromArray(dimension.species, new, 0)
+            .rearrange(dimension.transposeShuffle)
+            .div(determinant())
+            .toMatrix()
     }
 
     fun transpose(): Matrix<D> = vector
-        .rearrange(dimension.inversionShuffle)
+        .rearrange(dimension.transposeShuffle)
         .toMatrix()
-
-    private fun columns() = (0 until dimension.width).map { Tuple(column(it)) }
-
 
     operator fun times(other: Matrix<*>): Matrix<*> {
         require(dimension == other.dimension) { "$dimension vs ${other.dimension}" }
-        val width = dimension.width
         val rows = rows()
         val columns = other.columns()
 
         val array = FloatArray(dimension.size) { id ->
-            val row = id / width
-            val column = id % width
+            val (row, column) = dimension.rowAndColumn(id)
             rows[row] dot columns[column]
         }
         return Matrix(array, dimension)
@@ -81,39 +86,30 @@ class Matrix<D : Dimension> private constructor(
 
     operator fun times(other: Tuple): Tuple {
         require(dimension.width == 4) { "$dimension" }
-        val width = dimension.width
         val rows = rows()
 
         val array = FloatArray(dimension.width) { id ->
-            rows[id] dot other
+            rows[id] dot other.vector
         }
         return Tuple(array)
     }
 
-    private fun rows() = (0 until dimension.width).map {
-        Tuple(FloatVector.fromArray(Tuple.SPECIES, row(it).toArray(), 0))
-    }
-
     fun subMatrix(row: Int, column: Int): Matrix<*> {
-        try {
-            val vectorShuffle = dimension.subArrayShuffle[row][column]
-            val sub = dimension.sub ?: throw UnsupportedOperationException()
-            val species = sub.species
+        val sub = dimension.sub ?: throw UnsupportedOperationException()
+        val vectorShuffle = dimension.subArrayShuffle[row][column]
+        val species = sub.species
 
-            return Matrix(
-                vector.rearrange(vectorShuffle, dimension.subMask)
-                    .toSpecies(species),
-                sub
-            )
-        } catch (e: Exception) {
-            TODO("Not yet implemented")
-        }
+        return Matrix(
+            vector.rearrange(vectorShuffle, dimension.subMask)
+                .toSpecies(species),
+            sub
+        )
     }
 
     fun minor(x: Int, y: Int): Float = subMatrix(x, y).determinant()
     fun cofactor(x: Int, y: Int): Float {
-        val factor = if ((x + y) % 2 == 0) 1 else -1
-        return subMatrix(x, y).determinant() * factor
+        val determinant = subMatrix(x, y).determinant()
+        return if ((x + y) % 2 == 0) determinant else -determinant
     }
 
     fun isInvertable(): Boolean = determinant() != 0.0f
@@ -138,17 +134,15 @@ class Matrix<D : Dimension> private constructor(
         return this approx other
     }
 
-    override fun toString(): String {
-        return StringBuilder().apply {
-            for (index in 0 until dimension.size) {
-                if (index == 0) append("{")
-                append(vector.lane(index))
-                if (index == dimension.size - 1) append("}")
-                else if ((index + 1) % dimension.width == 0) append("\n")
-                else append(", ")
-            }
-        }.toString()
-    }
+    override fun toString(): String = StringBuilder().apply {
+        for (index in 0 until dimension.size) {
+            if (index == 0) append("{")
+            append(vector.lane(index))
+            if (index == dimension.size - 1) append("}")
+            else if ((index + 1) % dimension.width == 0) append("\n")
+            else append(", ")
+        }
+    }.toString()
 
     private fun FloatVector.toMatrix() = Matrix(this, dimension)
 
@@ -162,7 +156,6 @@ class Matrix<D : Dimension> private constructor(
         }
 
         fun D4(array: FloatArray): Matrix<D4> = Matrix(array, D4)
-
     }
 }
 
