@@ -1,5 +1,8 @@
 package uk.co.kievits.raytracer.base
 
+import java.io.BufferedWriter
+import java.io.CharArrayWriter
+import java.io.Writer
 import kotlin.math.roundToInt
 import kotlin.text.StringBuilder
 
@@ -24,9 +27,15 @@ class Canvas(
     }
 
     fun toPpm(): String {
+        val writer = CharArrayWriter()
+        toPpm(writer)
+        return writer.toString()
+    }
+
+    fun toPpm(writer: Writer) {
         val builder = StringBuilder()
 
-        builder.append("P3\n$width $height\n255")
+        writer.write("P3\n$width $height\n255")
 
         val lastPixel = width - 1
 
@@ -35,16 +44,15 @@ class Canvas(
             var size = 0
             for (x in 0 until width) {
                 val color = get(x, y)
-                size = builder.appendColor(color.red.bitValue, size, true)
-                size = builder.appendColor(color.green.bitValue, size, true)
-                size = builder.appendColor(color.blue.bitValue, size, x != lastPixel)
+                size = writer.appendColor(color.red.bitValue, size, true)
+                size = writer.appendColor(color.green.bitValue, size, true)
+                size = writer.appendColor(color.blue.bitValue, size, x != lastPixel)
             }
         }
         builder.append('\n')
-        return builder.toString()
     }
 
-    private fun StringBuilder.appendColor(
+    private fun Writer.appendColor(
         value: Int,
         previousSize: Int,
         addSpace: Boolean
@@ -64,7 +72,7 @@ class Canvas(
             lineSize += 1
         }
 
-        append(value)
+        write(value)
 
         return lineSize + numberSize
     }

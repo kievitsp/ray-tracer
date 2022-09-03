@@ -1,5 +1,7 @@
 package uk.co.kievits.raytracer.together
 
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Vector
@@ -15,7 +17,11 @@ import uk.co.kievits.raytracer.world.World
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.math.PI
+import kotlin.system.exitProcess
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
+@OptIn(ExperimentalTime::class)
 fun main() {
     val floor = Sphere().apply {
         transform = scaling(10, 0.01, 10)
@@ -90,11 +96,26 @@ fun main() {
         Vector(0, 1, 0)
     )
 
-    val image = camera.render(world)
+    val (image, time) = measureTimedValue {
+        camera.render(world)
+    }
+
+
+    // 50.603431300s
+    println("normal time $time")
+
+    val (_, aSyncTime) = measureTimedValue {
+        runBlocking { camera.renderAsync(world) }
+    }
+
+    // 17.521477800s
+    println("async time $aSyncTime")
 
     val path = Paths.get("./chapter7.ppm")
 
     Files.newBufferedWriter(path).use {
-        it.write(image.toPpm())
+        image.toPpm(it)
     }
+
+    exitProcess(0)
 }
