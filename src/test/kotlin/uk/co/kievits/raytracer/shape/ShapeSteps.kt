@@ -18,7 +18,7 @@ class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c|p)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -234,6 +234,10 @@ class ShapeSteps : En {
 
         Then("{tuple} = {sphere}.material.color") { color: COLOR, sphere: Sphere ->
             assert(color == sphere.material.color)
+        }
+
+        Then("is_shadowed\\({world}, {tuple}) is {boolean}") { w: World, p: POINT, shadow: Boolean ->
+            assert(w.isShadowed(p) == shadow)
         }
     }
 }

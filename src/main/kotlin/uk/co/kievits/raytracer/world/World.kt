@@ -3,6 +3,7 @@ package uk.co.kievits.raytracer.world
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors
+import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.scaling
@@ -36,6 +37,17 @@ data class World(
         val precompute = intersection.precompute(ray)
 
         return shadeHit(precompute)
+    }
+
+    fun isShadowed(point: POINT): Boolean {
+        val v = light!!.position - point
+        val distance = v.magnitude
+        val direction = v.normalise
+
+        val r = Ray(point, direction)
+        val hit = intersections(r).hit()
+
+        return hit != null && hit.t < distance
     }
 
     companion object {
