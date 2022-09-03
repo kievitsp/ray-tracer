@@ -27,12 +27,15 @@ infix fun V.approx(other: V): Boolean {
     return diff < EPSILON
 }
 
+fun translation(x: Number, y: Number, z: Number) = translation(x.toFloat(), y.toFloat(), z.toFloat())
 fun translation(x: V, y: V, z: V) = Matrix.D4(
     1f, 0f, 0f, x,
     0f, 1f, 0f, y,
     0f, 0f, 1f, z,
     0f, 0f, 0f, 1f,
 )
+
+fun scaling(x: Number, y: Number, z: Number) = scaling(x.toFloat(), y.toFloat(), z.toFloat())
 
 fun scaling(x: V, y: V, z: V) = Matrix.D4(
     x, 0f, 0f, 0f,
@@ -41,20 +44,22 @@ fun scaling(x: V, y: V, z: V) = Matrix.D4(
     0f, 0f, 0f, 1f,
 )
 
+fun rotationX(r: Number) = rotationX(r.toFloat())
+
 fun rotationX(r: V) = Matrix.D4(
     1f, 0f, 0f, 0f,
     0f, cos(r), -sin(r), 0f,
     0f, sin(r), cos(r), 0f,
     0f, 0f, 0f, 1f,
 )
-
+fun rotationY(r: Number) = rotationY(r.toFloat())
 fun rotationY(r: V) = Matrix.D4(
     cos(r), 0f, sin(r), 0f,
     0f, 1f, 0f, 0f,
     -sin(r), 0f, cos(r), 0f,
     0f, 0f, 0f, 1f,
 )
-
+fun rotationZ(r: Number) = rotationZ(r.toFloat())
 fun rotationZ(r: V) = Matrix.D4(
     cos(r), -sin(r), 0f, 0f,
     sin(r), cos(r), 0f, 0f,
