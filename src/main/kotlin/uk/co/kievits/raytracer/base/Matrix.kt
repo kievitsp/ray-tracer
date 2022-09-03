@@ -155,7 +155,7 @@ class Matrix<D : Dimension> private constructor(
             return Matrix(newArray, D3)
         }
 
-        fun D4(array: FloatArray): Matrix<D4> = Matrix(array, D4)
+        fun D4(vararg array: Float): Matrix<D4> = Matrix(array, D4)
     }
 }
 

@@ -5,6 +5,10 @@ import jdk.incubator.vector.VectorMask
 import jdk.incubator.vector.VectorShuffle
 import jdk.incubator.vector.VectorSpecies
 
+typealias D2 = Dimension.D2
+typealias D3 = Dimension.D3
+typealias D4 = Dimension.D4
+
 sealed class Dimension(
     val size: Int,
     val width: Int,

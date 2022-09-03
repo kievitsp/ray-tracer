@@ -26,53 +26,39 @@ infix fun V.approx(other: V): Boolean {
     return diff < EPSILON
 }
 
-typealias D2 = Dimension.D2
-typealias D3 = Dimension.D3
-typealias D4 = Dimension.D4
-
 fun translation(x: V, y: V, z: V) = Matrix.D4(
-    floatArrayOf(
-        1f, 0f, 0f, x,
-        0f, 1f, 0f, y,
-        0f, 0f, 1f, z,
-        0f, 0f, 0f, 1f,
-    ),
+    1f, 0f, 0f, x,
+    0f, 1f, 0f, y,
+    0f, 0f, 1f, z,
+    0f, 0f, 0f, 1f,
 )
 
 fun scaling(x: V, y: V, z: V) = Matrix.D4(
-    floatArrayOf(
-        x, 0f, 0f, 0f,
-        0f, y, 0f, 0f,
-        0f, 0f, z, 0f,
-        0f, 0f, 0f, 1f,
-    ),
+    x, 0f, 0f, 0f,
+    0f, y, 0f, 0f,
+    0f, 0f, z, 0f,
+    0f, 0f, 0f, 1f,
 )
 
 fun rotationX(r: V) = Matrix.D4(
-    floatArrayOf(
-        1f, 0f, 0f, 0f,
-        0f, cos(r), -sin(r), 0f,
-        0f, sin(r), cos(r), 0f,
-        0f, 0f, 0f, 1f,
-    )
+    1f, 0f, 0f, 0f,
+    0f, cos(r), -sin(r), 0f,
+    0f, sin(r), cos(r), 0f,
+    0f, 0f, 0f, 1f,
 )
 
 fun rotationY(r: V) = Matrix.D4(
-    floatArrayOf(
-        cos(r), 0f, sin(r), 0f,
-        0f, 1f, 0f, 0f,
-        -sin(r), 0f, cos(r), 0f,
-        0f, 0f, 0f, 1f,
-    )
+    cos(r), 0f, sin(r), 0f,
+    0f, 1f, 0f, 0f,
+    -sin(r), 0f, cos(r), 0f,
+    0f, 0f, 0f, 1f,
 )
 
 fun rotationZ(r: V) = Matrix.D4(
-    floatArrayOf(
-        cos(r), -sin(r), 0f, 0f,
-        sin(r), cos(r), 0f, 0f,
-        0f, 0f, 1f, 0f,
-        0f, 0f, 0f, 1f,
-    )
+    cos(r), -sin(r), 0f, 0f,
+    sin(r), cos(r), 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f,
 )
 
 fun shearing(
@@ -83,19 +69,38 @@ fun shearing(
     zx: V,
     zy: V,
 ) = Matrix.D4(
-    floatArrayOf(
-        1f, xy, xz, 0f,
-        yx, 1f, yz, 0f,
-        zx, zy, 1f, 0f,
-        0f, 0f, 0f, 1f,
-    )
+    1f, xy, xz, 0f,
+    yx, 1f, yz, 0f,
+    zx, zy, 1f, 0f,
+    0f, 0f, 0f, 1f,
 )
 
 fun IdentityMatrix() = Matrix.D4(
-    floatArrayOf(
-        1f, 0f, 0f, 0f,
-        0f, 1f, 0f, 0f,
-        0f, 0f, 1f, 0f,
+    1f, 0f, 0f, 0f,
+    0f, 1f, 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f,
+)
+
+fun viewTransformation(
+    from: POINT,
+    to: POINT,
+    up: VECTOR,
+): Matrix<*> {
+    val forward = (to - from).normalise
+    val left = forward cross up.normalise
+
+    val trueUp = left cross forward
+    val minusForward = -forward
+
+    val orientation = Matrix.D4(
+        left.x, left.y, left.z, 0f,
+        trueUp.x, trueUp.y, trueUp.z, 0f,
+        minusForward.x, minusForward.y, minusForward.z, 0f,
         0f, 0f, 0f, 1f,
     )
-)
+
+    val minusFrom = -from
+
+    return orientation * translation(minusFrom.x, minusFrom.y, minusFrom.z)
+}

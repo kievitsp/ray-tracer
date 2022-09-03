@@ -29,7 +29,7 @@ class StepDefs : En {
             }
 
             when (array.size) {
-                16 -> Matrix.D4(array)
+                16 -> Matrix.D4(*array)
                 9 -> Matrix.D3(array)
                 4 -> Matrix.D2(array)
                 else -> TODO(array.contentToString())
@@ -38,7 +38,7 @@ class StepDefs : En {
 
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\($numberPattern\\)|([a-z]\\w?|zero|norm|origin|direction)",
+            "(tuple|vector|point|color)\\($numberPattern\\)|([a-z]\\w?|zero|norm|origin|direction|up|from|to)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -147,6 +147,10 @@ class StepDefs : En {
 
         When("{} ← reflect\\({tuple}, {tuple})") { name: String, a: TUPLE, b: TUPLE ->
             SharedVars[name] = a reflect b
+        }
+
+        When("{variable} ← view_transform\\({tuple}, {tuple}, {tuple})") { name: String, from: POINT, to: POINT, up: VECTOR ->
+            SharedVars[name] = viewTransformation(from, to, up)
         }
 
         Then("transpose\\({mVar}) is the following matrix:") { a: MATRIX, b: MATRIX ->
