@@ -14,7 +14,7 @@ typealias POINT = TUPLE
 
 const val POINT_W: V = 1.0f
 const val VECTOR_W: V = 0.0f
-const val EPSILON: V = 0.00001f
+const val EPSILON: V = 0.0005f
 
 fun PointZero() = Point(0f, 0f, 0f)
 fun Point(x: Number, y: Number, z: Number) = Tuple(x, y, z, POINT_W)

@@ -31,6 +31,7 @@ data class Material(
         point: POINT,
         eyeV: VECTOR,
         normalV: VECTOR,
+        inShadow: Boolean,
     ): COLOR {
         val effectiveColor = color * light.intensity
         val lightV = (light.position - point).normalise

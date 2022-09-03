@@ -143,7 +143,7 @@ class ShapeSteps : En {
         }
 
         When("{variable} ← lighting\\({material}, {light}, {tuple}, {tuple}, {tuple}\\)") { name: String, material: Material, light: PointLight, position: POINT, eyeV: VECTOR, normalV: VECTOR ->
-            SharedVars[name] = material.lighting(light, position, eyeV, normalV)
+            SharedVars[name] = material.lighting(light, position, eyeV, normalV, false)
         }
 
         When("{} ← {sphere}.material") { name: String, sphere: Sphere ->

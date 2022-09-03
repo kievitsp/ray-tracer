@@ -78,11 +78,11 @@ class Tuple(
     }
 
     infix fun approx(other: Tuple): Boolean {
-        val dif = vector.sub(other.vector)
+        val maxDiff = vector.sub(other.vector)
             .abs()
             .reduceLanes(VectorOperators.MAX)
 
-        return dif < EPSILON
+        return maxDiff < EPSILON
     }
 
     infix fun reflect(normal: Tuple): Tuple = this - (normal * 2f * (this dot normal))

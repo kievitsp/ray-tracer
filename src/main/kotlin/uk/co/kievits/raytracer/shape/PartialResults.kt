@@ -19,6 +19,7 @@ data class PartialResults(
         light = light,
         point = point,
         eyeV = eyeV,
-        normalV = normalV
+        normalV = normalV,
+        inShadow = false
     )
 }
