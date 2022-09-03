@@ -56,6 +56,9 @@ data class Material(
         }
     }
 
+    override fun toString(): String =
+        "Material(color=$color, ambient=$ambient, diffuse=$diffuse, specular=$specular, shininess=$shininess)"
+
     companion object {
         private val defaultColor: COLOR = Color(1, 1, 1)
         private const val defaultAmbient: V = 0.1f

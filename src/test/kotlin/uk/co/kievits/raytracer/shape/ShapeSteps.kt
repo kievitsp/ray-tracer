@@ -83,10 +83,11 @@ class ShapeSteps : En {
 
         ParameterType(
             "world",
-            "w|world\\(\\)",
+            "w|world\\(\\)|default_world\\(\\)",
         ) { name ->
             when (name) {
                 "world()" -> World()
+                "default_world()" -> World.default()
                 else -> SharedVars.get<World>(name)
             }
         }
@@ -96,15 +97,15 @@ class ShapeSteps : En {
         }
 
         Given("{} ← {intersections}") { name: String, intersections: Intersections ->
-            SharedVars.vars[name] = intersections
+            SharedVars[name] = intersections
         }
 
         Given("{} ← {world}") { name: String, world: World ->
-            SharedVars.vars[name] = world
+            SharedVars[name] = world
         }
 
         Given("{variable} ← {material}") { name: String, material: Material ->
-            SharedVars.vars[name] = material
+            SharedVars[name] = material
         }
 
         Given("{material}.ambient ← {float}") { material: Material, ambient: Float ->
@@ -188,8 +189,17 @@ class ShapeSteps : En {
         Then("{world} contains no objects") { w: World ->
             assert(w.objects.isEmpty())
         }
+
         Then("{world} has no light source") { w: World ->
-            assert(w.lights.isEmpty())
+            assert(w.light == null)
+        }
+
+        Then("{world}.light = {light}") { w: World, light: PointLight ->
+            assert(w.light == light)
+        }
+
+        Then("{world} contains {variable}") { w: World, sphere: String ->
+            assert(w.objects.contains(SharedVars[sphere]))
         }
     }
 }

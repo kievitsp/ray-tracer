@@ -61,4 +61,15 @@ class Sphere(
             )
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Sphere) return false
+
+        return material == other.material &&
+            transform approx other.transform
+    }
+
+    override fun toString(): String {
+        return "Sphere(material=$material, transform=$transform)"
+    }
 }
