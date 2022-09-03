@@ -72,7 +72,7 @@ class Matrix<D : Dimension> private constructor(
         .rearrange(dimension.transposeShuffle)
         .toMatrix()
 
-    operator fun times(other: Matrix<*>): Matrix<*> {
+    operator fun times(other: Matrix<D>): Matrix<D> {
         require(dimension == other.dimension) { "$dimension vs ${other.dimension}" }
         val rows = rows()
         val columns = other.columns()

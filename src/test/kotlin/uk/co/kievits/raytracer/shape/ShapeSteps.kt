@@ -81,17 +81,6 @@ class ShapeSteps : En {
             }
         }
 
-        ParameterType(
-            "world",
-            "w|world\\(\\)|default_world\\(\\)",
-        ) { name ->
-            when (name) {
-                "world()" -> World()
-                "default_world()" -> World.default()
-                else -> SharedVars.get<World>(name)
-            }
-        }
-
         ParameterType("comps", "comps") { name -> SharedVars.get<PartialResults>(name) }
 
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
@@ -100,10 +89,6 @@ class ShapeSteps : En {
 
         Given("{} ← {intersections}") { name: String, intersections: Intersections ->
             SharedVars[name] = intersections
-        }
-
-        Given("{} ← {world}") { name: String, world: World ->
-            SharedVars[name] = world
         }
 
         Given("{variable} ← {material}") { name: String, material: Material ->

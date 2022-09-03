@@ -18,6 +18,7 @@ const val EPSILON: V = 0.00001f
 
 fun PointZero() = Point(0f, 0f, 0f)
 fun Point(x: Number, y: Number, z: Number) = Tuple(x, y, z, POINT_W)
+fun Point(x: Float, y: Float, z: Float) = Tuple(x, y, z, POINT_W)
 fun Vector(x: Number, y: Number, z: Number) = Tuple(x, y, z, VECTOR_W)
 fun Color(x: Number, y: Number, z: Number) = Tuple(x, y, z, 0)
 
@@ -86,7 +87,7 @@ fun viewTransformation(
     from: POINT,
     to: POINT,
     up: VECTOR,
-): Matrix<*> {
+): Matrix<D4> {
     val forward = (to - from).normalise
     val left = forward cross up.normalise
 

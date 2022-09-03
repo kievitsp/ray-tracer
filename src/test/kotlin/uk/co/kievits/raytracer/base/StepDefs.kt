@@ -126,10 +126,10 @@ class StepDefs : En {
         Then("{mVar} = {mVar}") { a: MATRIX, b: MATRIX -> assert(a approx b) }
         Then("{mVar} != {mVar}") { a: MATRIX, b: MATRIX -> assert(a napprox b) }
 
-        Then("{mVar} * {mVar} is the following 4x4 matrix:") { a: MATRIX, b: MATRIX, c: MATRIX ->
+        Then("{mVar} * {mVar} is the following 4x4 matrix:") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             assert(a * b == c)
         }
-        Then("{mVar} * {mVar} = {mVar}") { a: MATRIX, b: MATRIX, c: MATRIX ->
+        Then("{mVar} * {mVar} = {mVar}") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             assert(a * b == c)
         }
 
@@ -141,7 +141,7 @@ class StepDefs : En {
             vars[name] = a * b
         }
 
-        When("{} ← {mVar} * {mVar} * {mVar}") { name: String, a: MATRIX, b: MATRIX, c: MATRIX ->
+        When("{} ← {mVar} * {mVar} * {mVar}") { name: String, a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             vars[name] = a * b * c
         }
 
@@ -187,7 +187,7 @@ class StepDefs : En {
         Then("{mVar} is invertible") { m: MATRIX -> assert(m.isInvertable()) }
         Then("{mVar} is not invertible") { m: MATRIX -> assert(!m.isInvertable()) }
 
-        Then("{mVar} * inverse\\({mVar}) = {mVar}") { mVar: MATRIX, mVar2: MATRIX, mVar3: MATRIX ->
+        Then("{mVar} * inverse\\({mVar}) = {mVar}") { mVar: Matrix<D4>, mVar2: Matrix<D4>, mVar3: Matrix<D4> ->
             assert(mVar * mVar2.inverse() == mVar3)
         }
 
