@@ -12,6 +12,7 @@ import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.model.Sphere
+import uk.co.kievits.raytracer.world.World
 
 class ShapeSteps : En {
     init {
@@ -80,12 +81,26 @@ class ShapeSteps : En {
             }
         }
 
+        ParameterType(
+            "world",
+            "w|world\\(\\)",
+        ) { name ->
+            when (name) {
+                "world()" -> World()
+                else -> SharedVars.get<World>(name)
+            }
+        }
+
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
             SharedVars[name] = Ray(origin, direction)
         }
 
         Given("{} ← {intersections}") { name: String, intersections: Intersections ->
             SharedVars.vars[name] = intersections
+        }
+
+        Given("{} ← {world}") { name: String, world: World ->
+            SharedVars.vars[name] = world
         }
 
         Given("{variable} ← {material}") { name: String, material: Material ->
@@ -168,6 +183,13 @@ class ShapeSteps : En {
 
         Then("{material} = {material}") { actual: Material, exp: Material ->
             assert(actual == exp)
+        }
+
+        Then("{world} contains no objects") { w: World ->
+            assert(w.objects.isEmpty())
+        }
+        Then("{world} has no light source") { w: World ->
+            assert(w.lights.isEmpty())
         }
     }
 }
