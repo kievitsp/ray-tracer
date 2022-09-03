@@ -5,9 +5,10 @@ import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.junit.platform.suite.api.ConfigurationParameter
 import uk.co.kievits.raytracer.cucumber.Operator
-import uk.co.kievits.raytracer.model.SharedVars
-import uk.co.kievits.raytracer.model.SharedVars.get
-import uk.co.kievits.raytracer.model.SharedVars.vars
+import uk.co.kievits.raytracer.cucumber.SharedVars
+import uk.co.kievits.raytracer.cucumber.SharedVars.get
+import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
+import uk.co.kievits.raytracer.cucumber.SharedVars.vars
 import kotlin.collections.contentToString
 import kotlin.collections.set
 
@@ -17,7 +18,6 @@ import kotlin.collections.set
 class StepDefs : En {
 
     init {
-
         DataTableType { dataTable: DataTable ->
             val height = dataTable.height()
             val width = dataTable.width()
@@ -38,7 +38,7 @@ class StepDefs : En {
 
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\((.*?)\\)|([a-z]\\w?|zero|norm|origin|direction)",
+            "(tuple|vector|point|color)\\($numberPattern\\)|([a-z]\\w?|zero|norm|origin|direction)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -46,11 +46,10 @@ class StepDefs : En {
         ParameterType(
             "mVar",
             "(t|[A-Z]\\w*|IDENTITY_MATRIX|identity_matrix|\\w{3,})|" +
-                    "(translation|scaling|shearing|rotation_[xyz])\\((.*?)\\)"
+                "(translation|scaling|shearing|rotation_[xyz])\\($numberPattern\\)"
         ) { name, function, args ->
             SharedVars.buildMatrix(name, function, args)
         }
-
 
         Then("{} ← submatrix\\({mVar}, {int}, {int})") { name: String, m: MATRIX, x: Int, y: Int ->
             vars[name] = m.subMatrix(x, y)
@@ -59,10 +58,6 @@ class StepDefs : En {
         Given("the following 2x2 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("the following 4x4 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("the following 3x3 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
-
-        Given("{} ← {mVar} * {mVar}") { name: String, m1: MATRIX, m2: MATRIX ->
-            vars[name] = m1 * m2
-        }
 
         Given("the following matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
         Given("{} ← transpose\\({mVar})") { name: String, m: MATRIX -> vars[name] = m.transpose() }
@@ -89,10 +84,6 @@ class StepDefs : En {
         }
         Then("{tuple} is not a vector") { tuple: TUPLE ->
             assert(!tuple.isVector)
-        }
-
-        Then("{tuple} = {tuple}") { value: TUPLE, tuple: TUPLE ->
-            assert(value == tuple)
         }
 
         Then("-{tuple} = {tuple}") { value: TUPLE, tuple: TUPLE ->
@@ -138,7 +129,6 @@ class StepDefs : En {
         Then("{mVar} * {mVar} is the following 4x4 matrix:") { a: MATRIX, b: MATRIX, c: MATRIX ->
             assert(a * b == c)
         }
-
         Then("{mVar} * {mVar} = {mVar}") { a: MATRIX, b: MATRIX, c: MATRIX ->
             assert(a * b == c)
         }
@@ -153,6 +143,10 @@ class StepDefs : En {
 
         When("{} ← {mVar} * {mVar} * {mVar}") { name: String, a: MATRIX, b: MATRIX, c: MATRIX ->
             vars[name] = a * b * c
+        }
+
+        When("{} ← reflect\\({tuple}, {tuple})") { name: String, a: TUPLE, b: TUPLE ->
+            SharedVars[name] = a reflect b
         }
 
         Then("transpose\\({mVar}) is the following matrix:") { a: MATRIX, b: MATRIX ->

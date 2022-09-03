@@ -12,6 +12,13 @@ class Tuple(
         require(vector.species() == SPECIES) { vector }
     }
 
+    fun copy(
+        x: V = this.x,
+        y: V = this.y,
+        z: V = this.z,
+        w: V = this.w,
+    ) = Tuple(floatArrayOf(x, y, z, w))
+
     constructor(array: FloatArray) : this(FloatVector.fromArray(SPECIES, array, 0))
 
     val x: V get() = vector.lane(0)
@@ -77,6 +84,8 @@ class Tuple(
 
         return dif < EPSILON
     }
+
+    infix fun reflect(normal: Tuple): Tuple = this - (normal * 2f * (this dot normal))
 
     private fun FloatVector.toTuple() = Tuple(this)
 

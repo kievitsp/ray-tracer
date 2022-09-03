@@ -1,18 +1,8 @@
 package uk.co.kievits.raytracer.cucumber
 
 import io.cucumber.java8.En
-import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.MATRIX
-import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.TUPLE
-import uk.co.kievits.raytracer.base.rotationX
-import uk.co.kievits.raytracer.base.rotationY
-import uk.co.kievits.raytracer.base.rotationZ
-import uk.co.kievits.raytracer.base.scaling
-import uk.co.kievits.raytracer.base.shearing
-import uk.co.kievits.raytracer.base.translation
-import uk.co.kievits.raytracer.model.SharedVars
-import uk.co.kievits.raytracer.model.SharedVars.buildMatrix
 import kotlin.math.sqrt
 
 class SharedSteps : En {
@@ -22,6 +12,11 @@ class SharedSteps : En {
         ) { value ->
             SharedVars.get<String>(value)
         }
+
+        ParameterType(
+            "variable",
+            "[a-zA-Z]\\w*"
+        ) { value -> value }
 
         ParameterType(
             "number", "(√)?(-?\\d+(\\.\\d+)?)|(-?\\d+/-?\\d+)"
@@ -49,15 +44,24 @@ class SharedSteps : En {
             }
         }
 
-
-
         Given("{} ← {tuple}") { name: String, tuple: TUPLE ->
-            SharedVars.vars[name] = tuple
+            SharedVars[name] = tuple
         }
 
-        Given("{} ← {mVar}") { name: String, matrix: MATRIX ->
-            SharedVars.vars[name] = matrix
+        Given("{variable} ← {mVar}") { name: String, matrix: MATRIX ->
+            SharedVars[name] = matrix
         }
 
+        Then("{} is nothing") { name: String ->
+            assert(name !in SharedVars.vars)
+        }
+
+        Then("{tuple} = {tuple}") { actual: TUPLE, exp: TUPLE ->
+            assert(actual == exp)
+        }
+
+        Given("{} ← {mVar} * {mVar}") { name: String, m1: MATRIX, m2: MATRIX ->
+            SharedVars.vars[name] = m1 * m2
+        }
     }
 }

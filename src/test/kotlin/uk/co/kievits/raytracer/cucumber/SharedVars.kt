@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.cucumber
 
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.IdentityMatrix
@@ -17,18 +17,30 @@ import kotlin.math.sqrt
 
 object SharedVars {
     private val numberSplitter = ", ?".toRegex()
+    const val numberPattern = "([-0-9, .√π/]+)"
 
     @PublishedApi
     internal val vars = mutableMapOf<String, Any>()
 
     inline operator fun <reified T> get(name: String): T {
         val value = vars[name] as? T
-        assert(value is T) { vars[name].toString() }
+        assert(value is T) {
+            when (value) {
+                null -> "$name not found"
+                else -> "$name expected ${T::class.simpleName} actual ${value!!::class.simpleName}"
+            }
+        }
         return value as T
     }
 
-    operator fun set(name: String, value: Any) {
-        vars[name] = value
+    operator fun set(
+        name: String,
+        value: Any?
+    ) {
+        when (value) {
+            null -> vars.remove(name)
+            else -> vars[name] = value
+        }
     }
 
     fun parseFloats(string: String): List<Float> = string.split(numberSplitter)
@@ -77,7 +89,7 @@ object SharedVars {
                 "identity_matrix",
                 "IDENTITY_MATRIX" -> IdentityMatrix()
 
-                else -> SharedVars.get<MATRIX>(name)
+                else -> get<MATRIX>(name)
             }
         }
 
@@ -97,5 +109,4 @@ object SharedVars {
 
         else -> TODO()
     }
-
 }

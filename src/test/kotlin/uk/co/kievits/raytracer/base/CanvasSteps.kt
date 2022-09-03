@@ -1,9 +1,9 @@
 package uk.co.kievits.raytracer.base
 
 import io.cucumber.java8.En
-import uk.co.kievits.raytracer.model.SharedVars
-import uk.co.kievits.raytracer.model.SharedVars.get
-import uk.co.kievits.raytracer.model.SharedVars.vars
+import uk.co.kievits.raytracer.cucumber.SharedVars
+import uk.co.kievits.raytracer.cucumber.SharedVars.get
+import uk.co.kievits.raytracer.cucumber.SharedVars.vars
 
 class CanvasSteps : En {
     lateinit var canvas: Canvas
