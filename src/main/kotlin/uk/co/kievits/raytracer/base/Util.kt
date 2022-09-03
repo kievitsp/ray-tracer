@@ -21,11 +21,6 @@ fun Point(x: Number, y: Number, z: Number) = Tuple(x, y, z, POINT_W)
 fun Vector(x: Number, y: Number, z: Number) = Tuple(x, y, z, VECTOR_W)
 fun Color(x: Number, y: Number, z: Number) = Tuple(x, y, z, 0)
 
-object Colors {
-    val BLACK get() = Color(0, 0, 0)
-    val RED get() = Color(0, 0, 0)
-}
-
 infix fun V.approx(other: V): Boolean {
     val diff = abs(this - other)
     return diff < EPSILON

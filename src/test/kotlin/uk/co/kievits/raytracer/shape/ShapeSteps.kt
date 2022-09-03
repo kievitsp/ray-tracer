@@ -6,6 +6,7 @@ import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.TUPLE
+import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
@@ -16,7 +17,7 @@ class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -120,6 +121,10 @@ class ShapeSteps : En {
 
         When("{sphere}.material ← {material}") { sphere: Sphere, material: Material ->
             sphere.material = material
+        }
+
+        When("{variable} ← lighting\\({material}, {light}, {tuple}, {tuple}, {tuple}\\)") { name: String, material: Material, light: PointLight, position: POINT, eyeV: VECTOR, normalV: VECTOR ->
+            SharedVars[name] = material.lighting(light, position, eyeV, normalV)
         }
 
         When("{} ← {sphere}.material") { name: String, sphere: Sphere ->
