@@ -41,7 +41,7 @@ data class Material(
         val lightDotNormal = lightV dot normalV
 
         return when {
-            lightDotNormal < 0 -> ambient
+            inShadow || lightDotNormal < 0 -> ambient
             else -> {
                 val diffuse: COLOR = effectiveColor * this.diffuse * lightDotNormal
                 val reflectV = (-lightV) reflect normalV

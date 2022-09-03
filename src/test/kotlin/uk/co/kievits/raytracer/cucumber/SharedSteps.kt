@@ -40,7 +40,13 @@ class SharedSteps : En {
             }
         }
 
-        ParameterType("boolean", "true|false") { value -> value.toBoolean() }
+        ParameterType("boolean", "(true|false)|(in_shadow)") { value, name ->
+            when {
+                value != null -> value.toBoolean()
+                name != null -> SharedVars[name]
+                else -> TODO()
+            }
+        }
 
         ParameterType(
             "world",
@@ -62,6 +68,10 @@ class SharedSteps : En {
         }
         Given("{variable} ← {world}") { name: String, world: World ->
             SharedVars[name] = world
+        }
+
+        Given("{variable} ← {boolean}") { name: String, boolean: Boolean ->
+            SharedVars[name] = boolean
         }
 
         Then("{} is nothing") { name: String ->
