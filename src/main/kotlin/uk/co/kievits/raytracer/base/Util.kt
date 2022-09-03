@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import kotlin.math.abs
 import kotlin.math.cos
@@ -81,9 +81,12 @@ fun rotationZ(r: V) = Matrix.D4(
 )
 
 fun shearing(
-    xy: V, xz: V,
-    yx: V, yz: V,
-    zx: V, zy: V,
+    xy: V,
+    xz: V,
+    yx: V,
+    yz: V,
+    zx: V,
+    zy: V,
 ) = Matrix.D4(
     floatArrayOf(
         1f, xy, xz, 0f,
@@ -93,7 +96,7 @@ fun shearing(
     )
 )
 
-fun IdentityMatrix(): Matrix<*> = Matrix.D4(
+fun IdentityMatrix() = Matrix.D4(
     floatArrayOf(
         1f, 0f, 0f, 0f,
         0f, 1f, 0f, 0f,
@@ -101,4 +104,3 @@ fun IdentityMatrix(): Matrix<*> = Matrix.D4(
         0f, 0f, 0f, 1f,
     )
 )
-

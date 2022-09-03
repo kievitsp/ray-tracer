@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorMask
@@ -99,5 +99,4 @@ sealed class Dimension(
     object D3 : Dimension(9, 3, FloatVector.SPECIES_512, D2)
 
     object D4 : Dimension(16, 4, FloatVector.SPECIES_512, D3)
-
 }

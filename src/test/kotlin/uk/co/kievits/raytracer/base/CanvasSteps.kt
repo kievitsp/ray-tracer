@@ -1,8 +1,8 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import io.cucumber.java8.En
-import uk.co.kievits.raytracer.model.SharedVars.getVar
-import uk.co.kievits.raytracer.model.SharedVars.numberSplitter
+import uk.co.kievits.raytracer.model.SharedVars
+import uk.co.kievits.raytracer.model.SharedVars.get
 import uk.co.kievits.raytracer.model.SharedVars.vars
 
 class CanvasSteps : En {
@@ -13,15 +13,15 @@ class CanvasSteps : En {
             "canvas",
             "canvas\\((.*?)\\)",
         ) { args: String ->
-            val floats = args.split(numberSplitter).map { it.toInt() }
-            Canvas(floats[0], floats[1])
+            val ints = SharedVars.parseFloats(args).map { it.toInt() }
+            Canvas(ints[0], ints[1])
         }
         Given("c ← {canvas}") { canvas: CANVAS ->
             this.canvas = canvas
         }
 
-        When("write_pixel\\(c, {int}, {int}, {})") {  x: Int, y: Int, color: String ->//, c: COLOR ->
-            canvas[x, y] = getVar(color)
+        When("write_pixel\\(c, {int}, {int}, {})") { x: Int, y: Int, color: String -> // , c: COLOR ->
+            canvas[x, y] = get(color)
         }
 
         When("{} ← canvas_to_ppm\\(c)") { name: String ->
@@ -37,7 +37,7 @@ class CanvasSteps : En {
         }
 
         Then("pixel_at\\(c, {int}, {int}) = {}") { x: Int, y: Int, color: String ->
-            assert(canvas[x, y] == getVar(color))
+            assert(canvas[x, y] == get(color))
         }
 
         Then("c.width = {int}") { value: Int -> assert(canvas.width == value) }
@@ -51,5 +51,12 @@ class CanvasSteps : En {
             }
         }
 
+        Then("lines {int}-{int} of {stringVar} are") { start: Int, end: Int, ppm: String, expected: String ->
+            assert(ppm.split("\n").subList(start - 1, end).joinToString("\n") == expected)
+        }
+
+        Then("{stringVar} ends with a newline character") { ppm: String ->
+            assert(ppm.lastOrNull() == '\n')
+        }
     }
 }

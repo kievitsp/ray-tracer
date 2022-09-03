@@ -1,12 +1,11 @@
 package uk.co.kievits.raytracer.model
 
-import org.jetbrains.kotlinx.multik.ndarray.data.get
-import org.jetbrains.kotlinx.multik.ndarray.data.set
 import org.junit.jupiter.api.Test
-import uk.co.kievits.raytracer.model.Colors.RED
+import uk.co.kievits.raytracer.base.Canvas
+import uk.co.kievits.raytracer.base.Color
+import uk.co.kievits.raytracer.base.Colors.RED
 
 class CanvasTest {
-
 
     @Test
     fun `Creating a canvas`() {
@@ -21,9 +20,7 @@ class CanvasTest {
         val c = Canvas(10, 20)
         c[2, 3] = RED
         assert(c[2, 3] == RED)
-
     }
-
 
     @Test
     fun `Constructing the PPM header`() {
@@ -37,7 +34,6 @@ class CanvasTest {
             )
         )
     }
-
 
     @Test
     fun `Constructing the PPM pixel data`() {

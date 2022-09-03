@@ -1,8 +1,7 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import kotlin.math.roundToInt
 import kotlin.text.StringBuilder
-
 
 class Canvas(
     val width: Int,

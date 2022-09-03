@@ -1,16 +1,34 @@
 package uk.co.kievits.raytracer.model
 
+import uk.co.kievits.raytracer.base.Color
+import uk.co.kievits.raytracer.base.IdentityMatrix
+import uk.co.kievits.raytracer.base.MATRIX
+import uk.co.kievits.raytracer.base.Point
+import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.Vector
+import uk.co.kievits.raytracer.base.rotationX
+import uk.co.kievits.raytracer.base.rotationY
+import uk.co.kievits.raytracer.base.rotationZ
+import uk.co.kievits.raytracer.base.scaling
+import uk.co.kievits.raytracer.base.shearing
+import uk.co.kievits.raytracer.base.translation
 import kotlin.math.PI
 import kotlin.math.sqrt
 
 object SharedVars {
-    val numberSplitter = ", ?".toRegex()
-    val vars = mutableMapOf<String, Any>()
+    private val numberSplitter = ", ?".toRegex()
 
-    inline fun <reified T> getVar(name: String): T {
+    @PublishedApi
+    internal val vars = mutableMapOf<String, Any>()
+
+    inline operator fun <reified T> get(name: String): T {
         val value = vars[name] as? T
         assert(value is T) { vars[name].toString() }
         return value as T
+    }
+
+    operator fun set(name: String, value: Any) {
+        vars[name] = value
     }
 
     fun parseFloats(string: String): List<Float> = string.split(numberSplitter)
@@ -27,6 +45,57 @@ object SharedVars {
             string == "π" -> PI.toFloat()
             else -> string.toFloat()
         }
+    }
+
+    fun buildTuple(
+        args: String?,
+        type: String?,
+        name: String?
+    ) = when {
+        args != null && type != null -> {
+            val floats = parseFloats(args)
+            when (type) {
+                "tuple" -> Tuple(floats[0], floats[1], floats[2], floats[3])
+                "point" -> Point(floats[0], floats[1], floats[2])
+                "vector" -> Vector(floats[0], floats[1], floats[2])
+                "color" -> Color(floats[0], floats[1], floats[2])
+                else -> TODO(type)
+            }
+        }
+
+        name != null -> get(name)
+        else -> TODO()
+    }
+
+    fun buildMatrix(
+        name: String?,
+        function: String?,
+        args: String?,
+    ) = when {
+        name != null -> {
+            when (name) {
+                "identity_matrix",
+                "IDENTITY_MATRIX" -> IdentityMatrix()
+
+                else -> SharedVars.get<MATRIX>(name)
+            }
+        }
+
+        function != null && args != null -> {
+            val floats = parseFloats(args)
+            when (function) {
+                "translation" -> translation(floats[0], floats[1], floats[2])
+                "scaling" -> scaling(floats[0], floats[1], floats[2])
+                "shearing" -> shearing(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5])
+                "rotation_x" -> rotationX(floats[0])
+                "rotation_y" -> rotationY(floats[0])
+                "rotation_z" -> rotationZ(floats[0])
+
+                else -> TODO(function)
+            }
+        }
+
+        else -> TODO()
     }
 
 }

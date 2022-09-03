@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 class Ray(
     val origin: POINT,

@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorOperators
@@ -46,12 +46,12 @@ class Tuple(
     operator fun plus(other: Tuple): Tuple = (vector + other.vector).toTuple()
     operator fun minus(other: Tuple): Tuple = (vector - other.vector).toTuple()
     operator fun times(other: Tuple): Tuple = (vector * other.vector).toTuple()
-    operator fun div(other: Tuple): Tuple = (vector - other.vector).toTuple()
+    operator fun div(other: Tuple): Tuple = (vector / other.vector).toTuple()
 
     operator fun plus(other: V): Tuple = (vector + other).toTuple()
     operator fun minus(other: V): Tuple = (vector - other).toTuple()
     operator fun times(other: V): Tuple = (vector * other).toTuple()
-    operator fun div(other: V): Tuple = (vector - other).toTuple()
+    operator fun div(other: V): Tuple = (vector / other).toTuple()
 
     operator fun unaryMinus(): Tuple = (-vector).toTuple()
 

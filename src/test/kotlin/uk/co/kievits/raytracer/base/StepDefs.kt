@@ -1,37 +1,22 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import io.cucumber.core.options.Constants.GLUE_PROPERTY_NAME
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
-import io.cucumber.java8.PendingException
-import io.cucumber.junit.platform.engine.Cucumber
 import org.junit.platform.suite.api.ConfigurationParameter
-import uk.co.kievits.raytracer.model.SharedVars.getVar
-import uk.co.kievits.raytracer.model.SharedVars.numberSplitter
-import uk.co.kievits.raytracer.model.SharedVars.parseFloat
-import uk.co.kievits.raytracer.model.SharedVars.parseFloats
+import uk.co.kievits.raytracer.cucumber.Operator
+import uk.co.kievits.raytracer.model.SharedVars
+import uk.co.kievits.raytracer.model.SharedVars.get
 import uk.co.kievits.raytracer.model.SharedVars.vars
 import kotlin.collections.contentToString
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.math.PI
-import kotlin.math.sqrt
 
 @ConfigurationParameter(
     key = GLUE_PROPERTY_NAME, value = "uk.co.kievits.shared"
 )
 class StepDefs : En {
 
-
-    enum class Operator {
-        PLUS, MINUS, TIMES, DIV,
-    }
-
-
     init {
-
 
         DataTableType { dataTable: DataTable ->
             val height = dataTable.height()
@@ -43,118 +28,29 @@ class StepDefs : En {
                 dataTable.row(row)[column].toFloat()
             }
 
-//            val rows: Array<FloatArray> = (0 until height).map { row ->
-//                dataTable.row(row).map { cells -> cells.toFloat() }.toFloatArray()
-//            }.toTypedArray()
-//            mk.ndarray(rows)
             when (array.size) {
                 16 -> Matrix.D4(array)
                 9 -> Matrix.D3(array)
                 4 -> Matrix.D2(array)
                 else -> TODO(array.contentToString())
             }
-
         }
 
         ParameterType(
             "tuple",
             "(tuple|vector|point|color)\\((.*?)\\)|([a-z]\\w?|zero|norm|origin|direction)",
         ) { type: String?, args: String?, name: String? ->
-            if (args != null && type != null) {
-                val floats = parseFloats(args)
-                when (type) {
-                    "tuple" -> Tuple(floats[0], floats[1], floats[2], floats[3])
-                    "point" -> Point(floats[0], floats[1], floats[2])
-                    "vector" -> Vector(floats[0], floats[1], floats[2])
-                    "color" -> Color(floats[0], floats[1], floats[2])
-                    else -> TODO(type)
-                }
-            } else if (name != null) {
-                getVar<TUPLE>(name)
-            } else {
-                TODO()
-            }
-        }
-
-
-        ParameterType(
-            "operator", "\\+|-|\\*|/"
-        ) { value ->
-            when (value) {
-                "+" -> Operator.PLUS
-                "-" -> Operator.MINUS
-                "*" -> Operator.TIMES
-                "/" -> Operator.DIV
-                else -> TODO(value)
-            }
+            SharedVars.buildTuple(args, type, name)
         }
 
         ParameterType(
-            "stringVar", "[a-z]\\w*"
-        ) { value ->
-            getVar<String>(value)
-        }
-
-        ParameterType(
-            "mVar", "([A-Z]\\w*|IDENTITY_MATRIX|\\w{3,})|" + "(translation|scaling|shearing|rotation_[xyz])\\((.*?)\\)"
+            "mVar",
+            "(t|[A-Z]\\w*|IDENTITY_MATRIX|identity_matrix|\\w{3,})|" +
+                    "(translation|scaling|shearing|rotation_[xyz])\\((.*?)\\)"
         ) { name, function, args ->
-            when {
-                name != null -> {
-                    when (name) {
-                        "IDENTITY_MATRIX" -> IdentityMatrix()
-                        else -> getVar<MATRIX>(name)
-                    }
-                }
-
-                function != null -> {
-                    val floats = args.split(numberSplitter).map { parseFloat(it) }
-                    when (function) {
-                        "translation" -> translation(floats[0], floats[1], floats[2])
-                        "scaling" -> scaling(floats[0], floats[1], floats[2])
-                        "shearing" -> shearing(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5])
-                        "rotation_x" -> rotationX(floats[0])
-                        "rotation_y" -> rotationY(floats[0])
-                        "rotation_z" -> rotationZ(floats[0])
-
-                        else -> TODO(function)
-                    }
-                }
-
-                else -> TODO()
-            }
+            SharedVars.buildMatrix(name, function, args)
         }
 
-        ParameterType(
-            "number", "(√)?(-?\\d+(\\.\\d+)?)|(-?\\d+/-?\\d+)"
-        ) { sqrt: String?, value: String?, division: String? ->
-            if (value != null) {
-                val float = value.toFloat()
-                if (sqrt == null) float else sqrt(float)
-            } else if (division != null) {
-                val floats = division.split('/').map { it.toFloat() }
-                floats[0] / floats[1]
-            } else {
-                TODO()
-            }
-        }
-
-        Given("{} ← {tuple}") { name: String, tuple: TUPLE ->
-            vars[name] = tuple
-        }
-
-        Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
-            vars[name] = Ray(origin, direction)
-        }
-
-        When("r2 ← transform\\({}, {})") { ray: String, m: String ->
-            val ray: Ray = getVar(ray)
-            val matrix: MATRIX = getVar(m)
-            vars["r2"] = ray.transform(matrix)
-        }
-
-        Given("{} ← {mVar}") { name: String, matrix: MATRIX ->
-            vars[name] = matrix
-        }
 
         Then("{} ← submatrix\\({mVar}, {int}, {int})") { name: String, m: MATRIX, x: Int, y: Int ->
             vars[name] = m.subMatrix(x, y)
@@ -180,7 +76,6 @@ class StepDefs : En {
         Then("{tuple}.red = {float}") { tuple: TUPLE, value: Float -> assert(tuple.red == value) }
         Then("{tuple}.green = {float}") { tuple: TUPLE, value: Float -> assert(tuple.green == value) }
         Then("{tuple}.blue = {float}") { tuple: TUPLE, value: Float -> assert(tuple.blue == value) }
-
 
         Then("{tuple} is a point") { tuple: TUPLE ->
             assert(tuple.isPoint)
@@ -232,15 +127,6 @@ class StepDefs : En {
         When("{} ← normalize\\({tuple})") { name: String, exp: TUPLE -> vars[name] = exp.normalise }
         Then("dot\\({tuple}, {tuple}) = {float}") { a: TUPLE, b: TUPLE, exp: Float -> assert(a dot b == exp) }
         Then("cross\\({tuple}, {tuple}) = {tuple}") { a: TUPLE, b: TUPLE, exp: TUPLE -> assert(a cross b == exp) }
-
-        Then("lines {int}-{int} of {stringVar} are") { start: Int, end: Int, ppm: String, expected: String ->
-            assert(ppm.split("\n").subList(start - 1, end).joinToString("\n") == expected)
-        }
-
-
-        Then("{stringVar} ends with a newline character") { ppm: String ->
-            assert(ppm.lastOrNull() == '\n')
-        }
 
         Then("{mVar}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Float ->
             assert(matrix[x, y] approx number)
@@ -307,19 +193,9 @@ class StepDefs : En {
             assert(mVar * mVar2.inverse() == mVar3)
         }
 
-        Then("{}.origin = {tuple}") { name: String, exp: TUPLE ->
-            val ray: Ray = getVar(name)
-            assert(ray.origin == exp)
-        }
-        Then("{}.direction = {tuple}") { name: String, exp: TUPLE ->
-            val ray: Ray = getVar(name)
-            assert(ray.direction == exp)
-        }
-
         Then("position\\({}, {float}) = {tuple}") { name: String, point: Float, exp: TUPLE ->
-            val ray: Ray = getVar(name)
+            val ray: Ray = get(name)
             assert(ray.position(point) == exp)
-
         }
     }
 }

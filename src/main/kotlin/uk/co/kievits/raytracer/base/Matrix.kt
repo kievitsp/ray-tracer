@@ -1,4 +1,4 @@
-package uk.co.kievits.raytracer.model
+package uk.co.kievits.raytracer.base
 
 import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorOperators

@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "1.7.10"
     java
     id("com.bnorm.power.kotlin-power-assert") version "0.12.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
 group = "uk.co.kievits"
@@ -29,7 +30,6 @@ dependencies {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
-
     }
 }
 
@@ -40,7 +40,6 @@ tasks {
         systemProperty("cucumber.junit-platform.naming-strategy", "long")
 //        jvmArgs!!.add("--add-modules=jdk.incubator.vector")
         jvmArgs("--add-modules=jdk.incubator.vector")
-
     }
 
     withType<JavaCompile> {
