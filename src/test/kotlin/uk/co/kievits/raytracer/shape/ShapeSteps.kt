@@ -18,7 +18,7 @@ class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -114,6 +114,14 @@ class ShapeSteps : En {
             material.ambient = ambient
         }
 
+        Given("{variable} ← the first object in {world}") { name: String, w: World ->
+            SharedVars[name] = w.shapes.first()
+        }
+
+        Given("{variable} ← the second object in {world}") { name: String, w: World ->
+            SharedVars[name] = w.shapes.first { it != w.shapes.first() }
+        }
+
         When("{} ← intersection\\({float}, {sphere})") { name: String, t: Float, sphere: Sphere ->
             SharedVars[name] = Intersection(t, sphere)
         }
@@ -130,7 +138,11 @@ class ShapeSteps : En {
             SharedVars[name] = intersections.hit()
         }
 
-        When("{} ← point_light\\({tuple}, {tuple})") { name: String, point: POINT, color: COLOR ->
+        When("{variable} ← shade_hit\\({world}, {comps})") { variable: String, world: World, comps: PartialResults ->
+            SharedVars[variable] = world.shadeHit(comps)
+        }
+
+        When("{variable} ← point_light\\({tuple}, {tuple})") { name: String, point: POINT, color: COLOR ->
             SharedVars[name] = PointLight(
                 intensity = color,
                 position = point
@@ -155,6 +167,10 @@ class ShapeSteps : En {
 
         When("{variable} ← prepare_computations\\({intersection}, {ray})") { name: String, i: Intersection, r: Ray ->
             SharedVars[name] = i.precompute(r)
+        }
+
+        When("{world}.light ← point_light\\({tuple}, {tuple})") { world: World, point: POINT, color: COLOR ->
+            world.light = PointLight(position = point, intensity = color)
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
@@ -197,7 +213,7 @@ class ShapeSteps : En {
         }
 
         Then("{world} contains no objects") { w: World ->
-            assert(w.objects.isEmpty())
+            assert(w.shapes.isEmpty())
         }
 
         Then("{world} has no light source") { w: World ->
@@ -209,7 +225,7 @@ class ShapeSteps : En {
         }
 
         Then("{world} contains {variable}") { w: World, sphere: String ->
-            assert(w.objects.contains(SharedVars[sphere]))
+            assert(w.shapes.contains(SharedVars[sphere]))
         }
 
         Then("{comps}.t = {intersection}.t") { comps: PartialResults, i: Intersection -> assert(comps.t == i.t) }

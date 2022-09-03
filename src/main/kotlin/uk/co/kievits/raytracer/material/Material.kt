@@ -34,7 +34,9 @@ data class Material(
     ): COLOR {
         val effectiveColor = color * light.intensity
         val lightV = (light.position - point).normalise
+
         val ambient = effectiveColor * this.ambient
+
         val lightDotNormal = lightV dot normalV
 
         return when {
