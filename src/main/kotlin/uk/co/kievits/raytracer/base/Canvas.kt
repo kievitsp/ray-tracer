@@ -1,10 +1,8 @@
 package uk.co.kievits.raytracer.base
 
-import java.io.BufferedWriter
 import java.io.CharArrayWriter
 import java.io.Writer
 import kotlin.math.roundToInt
-import kotlin.text.StringBuilder
 
 class Canvas(
     val width: Int,
@@ -33,14 +31,12 @@ class Canvas(
     }
 
     fun toPpm(writer: Writer) {
-        val builder = StringBuilder()
-
         writer.write("P3\n$width $height\n255")
 
         val lastPixel = width - 1
 
         for (y in 0 until height) {
-            builder.append('\n')
+            writer.write("\n")
             var size = 0
             for (x in 0 until width) {
                 val color = get(x, y)
@@ -49,7 +45,7 @@ class Canvas(
                 size = writer.appendColor(color.blue.bitValue, size, x != lastPixel)
             }
         }
-        builder.append('\n')
+        writer.write("\n")
     }
 
     private fun Writer.appendColor(
@@ -65,14 +61,14 @@ class Canvas(
         }
 
         if (lineSize + numberSize >= 70) {
-            append('\n')
+            write("\n")
             lineSize = 0
         } else if (lineSize > 0) {
-            append(' ')
+            write(" ")
             lineSize += 1
         }
 
-        write(value)
+        write(value.toString())
 
         return lineSize + numberSize
     }
@@ -84,17 +80,17 @@ class Canvas(
             else -> (this * 255.0).roundToInt()
         }
 
-    private fun ppmPixel(x: Int, y: Int): String = get(x, y).ppmPixel()
+//    private fun ppmPixel(x: Int, y: Int): String = get(x, y).ppmPixel()
 
-    private fun COLOR.ppmPixel(): String = "${red.bitValue} ${green.bitValue} ${blue.bitValue}"
+//    private fun COLOR.ppmPixel(): String = "${red.bitValue} ${green.bitValue} ${blue.bitValue}"
 
-    internal inline fun forEach(block: (COLOR) -> Unit) {
-        data.forEach {
-            block(it)
-        }
-    }
+//    internal inline fun forEach(block: (COLOR) -> Unit) {
+//        data.forEach {
+//            block(it)
+//        }
+//    }
 
-    internal fun setAll(color: COLOR) {
-        data.indices.forEach { data[it] = color.copy() }
-    }
+//    internal fun setAll(color: COLOR) {
+//        data.indices.forEach { data[it] = color.copy() }
+//    }
 }

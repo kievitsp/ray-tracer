@@ -1,16 +1,11 @@
 package uk.co.kievits.raytracer.world
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.map
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Canvas
@@ -134,6 +129,5 @@ class Camera(
         private val cpus = Runtime.getRuntime().availableProcessors()
         override val coroutineContext: CoroutineContext =
             Executors.newFixedThreadPool(cpus).asCoroutineDispatcher()
-
     }
 }

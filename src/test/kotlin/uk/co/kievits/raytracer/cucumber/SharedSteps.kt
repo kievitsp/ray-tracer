@@ -69,7 +69,7 @@ class SharedSteps : En {
         }
 
         Then("{tuple} = {tuple}") { actual: TUPLE, exp: TUPLE ->
-            assert(actual == exp)
+            assert(actual approx exp)
         }
 
         Given("{variable} ← {mVar} * {mVar}") { name: String, m1: Matrix<D4>, m2: Matrix<D4> ->

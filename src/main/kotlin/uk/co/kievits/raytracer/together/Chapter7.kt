@@ -1,6 +1,5 @@
 package uk.co.kievits.raytracer.together
 
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Point
@@ -33,15 +32,15 @@ fun main() {
 
     val leftWall = Sphere().apply {
         transform = translation(0, 0, 5) *
-                rotationY(-PI / 4) * rotationX(PI / 2) *
-                scaling(10, 0.01, 10)
+            rotationY(-PI / 4) * rotationX(PI / 2) *
+            scaling(10, 0.01, 10)
         material = floor.material
     }
 
     val rightWall = Sphere().apply {
         transform = translation(0, 0, 5) *
-                rotationY(PI / 4) * rotationX(PI / 2) *
-                scaling(10, 0.01, 10)
+            rotationY(PI / 4) * rotationX(PI / 2) *
+            scaling(10, 0.01, 10)
         material = floor.material
     }
 
@@ -99,7 +98,6 @@ fun main() {
     val (image, time) = measureTimedValue {
         camera.render(world)
     }
-
 
     // 50.603431300s
     println("normal time $time")
