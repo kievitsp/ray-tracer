@@ -38,7 +38,6 @@ tasks {
     test {
         useJUnitPlatform()
         systemProperty("cucumber.junit-platform.naming-strategy", "long")
-//        jvmArgs!!.add("--add-modules=jdk.incubator.vector")
         jvmArgs("--add-modules=jdk.incubator.vector")
     }
 
