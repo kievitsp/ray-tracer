@@ -46,17 +46,15 @@ object SharedVars {
     fun parseFloats(string: String): List<Float> = string.split(numberSplitter)
         .map { parseFloat(it) }
 
-    fun parseFloat(string: String): Float {
-        return when {
-            string.contains("/") -> string.split("/")
-                .map { parseFloat(it.trim()) }
-                .reduce { a, b -> a / b }
+    fun parseFloat(string: String): Float = when {
+        string.contains("/") -> string.split("/")
+            .map { parseFloat(it.trim()) }
+            .reduce { a, b -> a / b }
 
-            string.startsWith("√") -> sqrt(parseFloat(string.substring(1)))
-            string.startsWith("-") -> -parseFloat(string.substring(1))
-            string == "π" -> PI.toFloat()
-            else -> string.toFloat()
-        }
+        string.startsWith("√") -> sqrt(parseFloat(string.substring(1)))
+        string.startsWith("-") -> -parseFloat(string.substring(1))
+        string == "π" -> PI.toFloat()
+        else -> string.toFloat()
     }
 
     fun buildTuple(
