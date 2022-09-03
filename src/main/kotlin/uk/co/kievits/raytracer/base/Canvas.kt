@@ -33,16 +33,14 @@ class Canvas(
     fun toPpm(writer: Writer) {
         writer.write("P3\n$width $height\n255")
 
-        val lastPixel = width - 1
-
         for (y in 0 until height) {
             writer.write("\n")
             var size = 0
             for (x in 0 until width) {
                 val color = get(x, y)
-                size = writer.appendColor(color.red.bitValue, size, true)
-                size = writer.appendColor(color.green.bitValue, size, true)
-                size = writer.appendColor(color.blue.bitValue, size, x != lastPixel)
+                size = writer.appendColor(color.red.bitValue, size)
+                size = writer.appendColor(color.green.bitValue, size)
+                size = writer.appendColor(color.blue.bitValue, size)
             }
         }
         writer.write("\n")
@@ -50,8 +48,7 @@ class Canvas(
 
     private fun Writer.appendColor(
         value: Int,
-        previousSize: Int,
-        addSpace: Boolean
+        previousSize: Int
     ): Int {
         var lineSize = previousSize
         val numberSize = when {
@@ -79,18 +76,4 @@ class Canvas(
             this < 0 -> 0
             else -> (this * 255.0).roundToInt()
         }
-
-//    private fun ppmPixel(x: Int, y: Int): String = get(x, y).ppmPixel()
-
-//    private fun COLOR.ppmPixel(): String = "${red.bitValue} ${green.bitValue} ${blue.bitValue}"
-
-//    internal inline fun forEach(block: (COLOR) -> Unit) {
-//        data.forEach {
-//            block(it)
-//        }
-//    }
-
-//    internal fun setAll(color: COLOR) {
-//        data.indices.forEach { data[it] = color.copy() }
-//    }
 }
