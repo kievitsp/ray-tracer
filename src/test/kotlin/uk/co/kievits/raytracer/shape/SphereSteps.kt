@@ -24,7 +24,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "sphere",
-            "(s[a-z]*)|sphere\\(\\)"
+            "(s[a-z]*|inner|outer)|sphere\\(\\)"
         ) { value ->
             when (value) {
                 null -> Sphere()

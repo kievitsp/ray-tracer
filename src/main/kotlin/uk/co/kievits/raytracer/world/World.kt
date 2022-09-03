@@ -25,7 +25,17 @@ data class World(
     )
 
     fun shadeHit(comps: PartialResults): COLOR {
-        return comps.shadeHit(light ?: return Colors.BLACK)
+        val light = light ?: return Colors.BLACK
+        return comps.shadeHit(light)
+    }
+
+    fun colorAt(ray: Ray): COLOR {
+        val intersection = intersections(ray)
+            .hit() ?: return Colors.BLACK
+
+        val precompute = intersection.precompute(ray)
+
+        return shadeHit(precompute)
     }
 
     companion object {

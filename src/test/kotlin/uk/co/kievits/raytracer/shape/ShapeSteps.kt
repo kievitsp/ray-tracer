@@ -142,6 +142,10 @@ class ShapeSteps : En {
             SharedVars[variable] = world.shadeHit(comps)
         }
 
+        When("{variable} ← color_at\\({world}, {ray})") { variable: String, world: World, ray: Ray ->
+            SharedVars[variable] = world.colorAt(ray)
+        }
+
         When("{variable} ← point_light\\({tuple}, {tuple})") { name: String, point: POINT, color: COLOR ->
             SharedVars[name] = PointLight(
                 intensity = color,
@@ -171,6 +175,10 @@ class ShapeSteps : En {
 
         When("{world}.light ← point_light\\({tuple}, {tuple})") { world: World, point: POINT, color: COLOR ->
             world.light = PointLight(position = point, intensity = color)
+        }
+
+        When("{sphere}.material.ambient ← {float}") { sphere: Sphere, ambient: Float ->
+            sphere.material.ambient = ambient
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
@@ -234,5 +242,9 @@ class ShapeSteps : En {
         Then("{comps}.eyev = {tuple}") { comps: PartialResults, eyev: VECTOR -> assert(comps.eyeV == eyev) }
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
+
+        Then("{tuple} = {sphere}.material.color") { color: COLOR, sphere: Sphere ->
+            assert(color == sphere.material.color)
+        }
     }
 }
