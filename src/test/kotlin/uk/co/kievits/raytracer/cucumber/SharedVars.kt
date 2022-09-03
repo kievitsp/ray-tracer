@@ -23,11 +23,11 @@ object SharedVars {
     internal val vars = mutableMapOf<String, Any>()
 
     inline operator fun <reified T> get(name: String): T {
-        val value = vars[name] as? T
+        val value = vars[name]
         assert(value is T) {
             when (value) {
                 null -> "$name not found"
-                else -> "$name expected ${T::class.simpleName} actual ${value!!::class.simpleName}"
+                else -> "$name expected ${T::class.simpleName} actual ${value::class.simpleName}"
             }
         }
         return value as T

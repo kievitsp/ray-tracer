@@ -92,6 +92,8 @@ class ShapeSteps : En {
             }
         }
 
+        ParameterType("comps", "comps") { name -> SharedVars.get<PartialResults>(name) }
+
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
             SharedVars[name] = Ray(origin, direction)
         }
@@ -148,7 +150,11 @@ class ShapeSteps : En {
         }
 
         When("xs ← intersect_world\\({world}, {ray})") { world: World, ray: Ray ->
-            SharedVars.vars["xs"] = world.intersections(ray)
+            SharedVars["xs"] = world.intersections(ray)
+        }
+
+        When("{variable} ← prepare_computations\\({intersection}, {ray})") { name: String, i: Intersection, r: Ray ->
+            SharedVars[name] = i.precompute(r)
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
@@ -205,5 +211,11 @@ class ShapeSteps : En {
         Then("{world} contains {variable}") { w: World, sphere: String ->
             assert(w.objects.contains(SharedVars[sphere]))
         }
+
+        Then("{comps}.t = {intersection}.t") { comps: PartialResults, i: Intersection -> assert(comps.t == i.t) }
+        Then("{comps}.object = {intersection}.object") { comps: PartialResults, i: Intersection -> assert(comps.shape == i.shape) }
+        Then("{comps}.point = {tuple}") { comps: PartialResults, point: POINT -> assert(comps.point == point) }
+        Then("{comps}.eyev = {tuple}") { comps: PartialResults, eyev: VECTOR -> assert(comps.eyeV == eyev) }
+        Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
     }
 }
