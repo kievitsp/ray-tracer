@@ -41,4 +41,17 @@ sealed class Intersections : List<Intersection> {
             }
         }
     }
+
+    companion object {
+        operator fun invoke(
+            hits: List<Intersection>,
+            isSorted: Boolean = false,
+        ): Intersections = when (hits.isEmpty()) {
+            true -> Miss
+            false -> when (isSorted) {
+                true -> Hits(hits)
+                false -> Hits(hits.sortedBy { it.t })
+            }
+        }
+    }
 }

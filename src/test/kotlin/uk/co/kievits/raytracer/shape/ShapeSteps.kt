@@ -147,6 +147,10 @@ class ShapeSteps : En {
             SharedVars[name] = sphere.material
         }
 
+        When("xs ← intersect_world\\({world}, {ray})") { world: World, ray: Ray ->
+            SharedVars.vars["xs"] = world.intersections(ray)
+        }
+
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
             assert(ray.origin == exp)
         }
