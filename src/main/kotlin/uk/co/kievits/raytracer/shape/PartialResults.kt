@@ -11,4 +11,5 @@ data class PartialResults(
     val point: POINT,
     val eyeV: VECTOR,
     val normalV: VECTOR,
+    val isInside: Boolean,
 )

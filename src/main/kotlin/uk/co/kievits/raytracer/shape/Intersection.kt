@@ -10,12 +10,18 @@ data class Intersection(
 ) {
     fun precompute(ray: Ray): PartialResults {
         val point = ray.position(t)
+        val eyeV = -ray.direction
+        val normalV = shape.normalAt(point)
+        val normalVDotEyeV = normalV dot eyeV
+        val isInside = normalVDotEyeV < 0
+
         return PartialResults(
             t = t,
             shape = shape,
             point = point,
-            eyeV = -ray.direction,
-            normalV = shape.normalAt(point),
+            eyeV = eyeV,
+            normalV = if (isInside) -normalV else normalV,
+            isInside = isInside,
         )
     }
 }

@@ -44,6 +44,8 @@ class SharedSteps : En {
             }
         }
 
+        ParameterType("boolean", "true|false") { value -> value.toBoolean() }
+
         Given("{} ← {tuple}") { name: String, tuple: TUPLE ->
             SharedVars[name] = tuple
         }
