@@ -7,26 +7,17 @@ import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloat
+import uk.co.kievits.raytracer.cucumber.SharedVars.variablePattern
 import uk.co.kievits.raytracer.world.World
 
 class SharedSteps : En {
     init {
-        ParameterType(
-            "stringVar", "[a-z]\\w*"
-        ) { value ->
+        ParameterType("stringVar", variablePattern) { value ->
             SharedVars.get<String>(value)
         }
 
-        ParameterType(
-            "variable",
-            "[a-zA-Z]\\w*"
-        ) { value -> value }
-
-        ParameterType(
-            "number", numberPattern
-        ) { value: String ->
-            parseFloat(value)
-        }
+        ParameterType("variable", variablePattern) { value -> value }
+        ParameterType("number", numberPattern) { value: String -> parseFloat(value) }
 
         ParameterType(
             "operator", "\\+|-|\\*|/"

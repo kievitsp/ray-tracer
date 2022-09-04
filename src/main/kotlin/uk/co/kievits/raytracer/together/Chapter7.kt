@@ -11,7 +11,7 @@ import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
 import uk.co.kievits.raytracer.canvas.ImageType
 import uk.co.kievits.raytracer.light.PointLight
-import uk.co.kievits.raytracer.model.Sphere
+import uk.co.kievits.raytracer.shape.Sphere
 import uk.co.kievits.raytracer.world.Camera
 import uk.co.kievits.raytracer.world.World
 import java.nio.file.Files

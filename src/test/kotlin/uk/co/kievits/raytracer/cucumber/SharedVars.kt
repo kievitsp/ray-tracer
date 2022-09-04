@@ -1,5 +1,6 @@
 package uk.co.kievits.raytracer.cucumber
 
+import io.cucumber.java8.En
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.IdentityMatrix
@@ -13,12 +14,14 @@ import uk.co.kievits.raytracer.base.rotationZ
 import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.base.shearing
 import uk.co.kievits.raytracer.base.translation
+import uk.co.kievits.raytracer.cucumber.SharedVars.variablePattern
 import kotlin.math.PI
 import kotlin.math.sqrt
 
 object SharedVars {
     private val numberSplitter = ", ?".toRegex()
     const val numberPattern = "((?:EPSILON|[-0-9, .√π/])+)"
+    const val variablePattern = "[a-zA-Z]\\w*"
 
     @PublishedApi
     internal val vars = mutableMapOf<String, Any>()
@@ -108,5 +111,11 @@ object SharedVars {
         }
 
         else -> TODO()
+    }
+}
+
+inline fun <reified T : Any> En.ParameterType(name: String) {
+    ParameterType<T>(name, variablePattern) { value ->
+        SharedVars.get<T>(value)
     }
 }

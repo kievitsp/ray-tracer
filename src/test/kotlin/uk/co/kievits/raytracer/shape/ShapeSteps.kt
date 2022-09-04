@@ -11,7 +11,6 @@ import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
-import uk.co.kievits.raytracer.model.Sphere
 import uk.co.kievits.raytracer.world.World
 
 class ShapeSteps : En {
@@ -107,20 +106,24 @@ class ShapeSteps : En {
             SharedVars[name] = w.shapes.first { it != w.shapes.first() }
         }
 
-        Given("{sphere} is added to {world}") { sphere: Sphere, world: World ->
-            world.shapes.add(sphere)
+        Given("{shape} is added to {world}") { shape: Shape, world: World ->
+            world.shapes.add(shape)
         }
 
-        When("{} ← intersection\\({float}, {sphere})") { name: String, t: Float, sphere: Sphere ->
-            SharedVars[name] = Intersection(t, sphere)
+        When("{} ← intersection\\({float}, {shape})") { name: String, t: Float, shape: Shape ->
+            SharedVars[name] = Intersection(t, shape)
         }
 
         When("{} ← transform\\({ray}, {mVar})") { name: String, ray: Ray, m: MATRIX ->
             SharedVars[name] = ray.transform(m)
         }
 
-        When("{} ← normal_at\\({sphere}, {tuple})") { name: String, sphere: Sphere, point: POINT ->
-            SharedVars[name] = sphere.normalAt(point)
+        When("{} ← normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
+            SharedVars[name] = shape.normalAt(point)
+        }
+
+        When("{} ← local_normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
+            SharedVars[name] = shape.localNormalAt(point)
         }
 
         When("{} ← hit\\({intersections}\\)") { name: String, intersections: Intersections ->
@@ -142,8 +145,8 @@ class ShapeSteps : En {
             )
         }
 
-        When("{sphere}.material ← {material}") { sphere: Sphere, material: Material ->
-            sphere.material = material
+        When("{shape}.material ← {material}") { shape: Shape, material: Material ->
+            shape.material = material
         }
 
         When("{variable} ← lighting\\({material}, {light}, {tuple}, {tuple}, {tuple}\\)") { name: String, material: Material, light: PointLight, position: POINT, eyeV: VECTOR, normalV: VECTOR ->
@@ -154,8 +157,8 @@ class ShapeSteps : En {
             SharedVars[name] = material.lighting(light, position, eyeV, normalV, inShadow)
         }
 
-        When("{} ← {sphere}.material") { name: String, sphere: Sphere ->
-            SharedVars[name] = sphere.material
+        When("{} ← {shape}.material") { name: String, shape: Shape ->
+            SharedVars[name] = shape.material
         }
 
         When("xs ← intersect_world\\({world}, {ray})") { world: World, ray: Ray ->
@@ -170,8 +173,8 @@ class ShapeSteps : En {
             world.light = PointLight(position = point, intensity = color)
         }
 
-        When("{sphere}.material.ambient ← {float}") { sphere: Sphere, ambient: Float ->
-            sphere.material.ambient = ambient
+        When("{shape}.material.ambient ← {float}") { shape: Shape, ambient: Float ->
+            shape.material.ambient = ambient
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
@@ -224,8 +227,8 @@ class ShapeSteps : En {
             assert(w.light == light)
         }
 
-        Then("{world} contains {variable}") { w: World, sphere: String ->
-            assert(w.shapes.contains(SharedVars[sphere]))
+        Then("{world} contains {variable}") { w: World, shape: String ->
+            assert(w.shapes.contains(SharedVars[shape]))
         }
 
         Then("{comps}.t = {intersection}.t") { comps: PartialResults, i: Intersection -> assert(comps.t == i.t) }
@@ -239,8 +242,8 @@ class ShapeSteps : En {
             assert(a.point.z > b.overPoint.z)
         }
 
-        Then("{tuple} = {sphere}.material.color") { color: COLOR, sphere: Sphere ->
-            assert(color == sphere.material.color)
+        Then("{tuple} = {shape}.material.color") { color: COLOR, shape: Shape ->
+            assert(color == shape.material.color)
         }
 
         Then("is_shadowed\\({world}, {tuple}) is {boolean}") { w: World, p: POINT, shadow: Boolean ->

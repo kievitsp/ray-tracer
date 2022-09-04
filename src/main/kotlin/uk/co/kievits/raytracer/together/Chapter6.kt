@@ -5,7 +5,7 @@ import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.canvas.PpmCanvas
 import uk.co.kievits.raytracer.light.PointLight
-import uk.co.kievits.raytracer.model.Sphere
+import uk.co.kievits.raytracer.shape.Sphere
 import java.nio.file.Files
 import java.nio.file.Paths
 

@@ -3,11 +3,10 @@ package uk.co.kievits.raytracer.shape
 import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.V
-import uk.co.kievits.raytracer.model.Sphere
 
 data class Intersection(
     val t: V,
-    val shape: Sphere,
+    val shape: Shape,
 ) {
     fun precompute(ray: Ray): PartialResults {
         val point = ray.position(t)

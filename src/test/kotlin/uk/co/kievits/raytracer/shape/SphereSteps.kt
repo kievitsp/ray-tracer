@@ -7,37 +7,41 @@ import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.Ray
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.approx
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.buildMatrix
-import uk.co.kievits.raytracer.cucumber.SharedVars.get
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloat
 import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloats
 import uk.co.kievits.raytracer.cucumber.SharedVars.vars
 import uk.co.kievits.raytracer.material.Material
-import uk.co.kievits.raytracer.model.Sphere
 import java.lang.IllegalStateException
 
 class SphereSteps : En {
 
     init {
         ParameterType(
-            "sphere",
-            "(s\\w*|inner|outer)|sphere\\(\\)"
-        ) { value ->
-            when (value) {
-                null -> Sphere()
-                else -> get<Sphere>(value)
+            "shape",
+            "([sp]\\w*|inner|outer)|(sphere|test_shape|plane)\\(\\)"
+        ) { value, new ->
+            when {
+                value != null -> SharedVars.get<Shape>(value)
+                else -> when (new) {
+                    "sphere" -> Sphere()
+                    "plane" -> Plane()
+                    "test_shape" -> TestShape()
+                    else -> TODO(new.toString())
+                }
             }
         }
 
-        Given("{} ← {sphere}") { name: String, sphere: Sphere ->
-            SharedVars[name] = sphere
+        Given("{variable} ← {shape}") { name: String, shape: Shape ->
+            SharedVars[name] = shape
         }
 
-        Given("{} ← {sphere} with:") { name: String, sphere: Sphere, data: DataTable ->
-            sphere.apply {
+        Given("{} ← {shape} with:") { name: String, shape: Shape, data: DataTable ->
+            shape.apply {
                 for (r in 0 until data.height()) {
                     val row = data.row(r)
                     val value = row[1]
@@ -57,19 +61,22 @@ class SphereSteps : En {
                     }
                 }
             }
-            SharedVars[name] = sphere
+            SharedVars[name] = shape
         }
 
-        When("xs ← intersect\\({sphere}, {ray})") { sphere: Sphere, ray: Ray ->
-            vars["xs"] = sphere.intersections(ray)
+        When("xs ← local_intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
+            vars["xs"] = shape.intersections(ray)
+        }
+        When("xs ← intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
+            vars["xs"] = shape.localIntersections(ray)
         }
 
-        When("set_transform\\({sphere}, {mVar})") { sphere: Sphere, matrix: Matrix<D4> ->
-            sphere.transform = matrix
+        When("set_transform\\({shape}, {mVar})") { shape: Shape, matrix: Matrix<D4> ->
+            shape.transform = matrix
         }
 
         Then("xs.count = {int}") { count: Int ->
-            val xs = get<Intersections>("xs")
+            val xs = SharedVars.get<Intersections>("xs")
             assert(xs.size == count)
         }
 
@@ -77,15 +84,24 @@ class SphereSteps : En {
             assert(intersection.t approx exp)
         }
 
-        Then("{intersection}.object = {sphere}") { intersection: Intersection, sphere: Sphere ->
-            assert(intersection.shape == sphere)
+        Then("{intersection}.object = {shape}") { intersection: Intersection, shape: Shape ->
+            assert(intersection.shape == shape)
         }
 
-        Then("{sphere}.transform = {mVar}") { sphere: Sphere, matrix: MATRIX ->
-            assert(sphere.transform == matrix)
+        Then("{shape}.transform = {mVar}") { shape: Shape, matrix: MATRIX ->
+            assert(shape.transform == matrix)
         }
-        Then("{sphere}.material = {material}") { sphere: Sphere, material: Material ->
-            assert(sphere.material == material)
+
+        Then("{shape}.material = {material}") { shape: Shape, material: Material ->
+            assert(shape.material == material)
+        }
+
+        Then("{shape}.saved_ray.origin = {tuple}") { shape: TestShape, exp: TUPLE ->
+            assert(shape.savedRay.origin == exp)
+        }
+
+        Then("{shape}.saved_ray.direction = {tuple}") { shape: TestShape, exp: TUPLE ->
+            assert(shape.savedRay.direction == exp)
         }
     }
 }

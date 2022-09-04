@@ -8,12 +8,13 @@ import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.light.PointLight
-import uk.co.kievits.raytracer.model.Sphere
 import uk.co.kievits.raytracer.shape.Intersections
 import uk.co.kievits.raytracer.shape.PartialResults
+import uk.co.kievits.raytracer.shape.Shape
+import uk.co.kievits.raytracer.shape.Sphere
 
 data class World(
-    val shapes: MutableList<Sphere> = mutableListOf(),
+    val shapes: MutableList<Shape> = mutableListOf(),
     var light: PointLight? = null,
 ) {
 
