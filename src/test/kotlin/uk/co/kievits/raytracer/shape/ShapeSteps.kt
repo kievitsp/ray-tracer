@@ -15,6 +15,7 @@ import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.GradientPattern
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
+import uk.co.kievits.raytracer.material.RingPattern
 import uk.co.kievits.raytracer.material.StripedPattern
 import uk.co.kievits.raytracer.material.TestPattern
 import uk.co.kievits.raytracer.world.World
@@ -132,6 +133,10 @@ class ShapeSteps : En {
 
         Given("{variable} ← gradient_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
             SharedVars[name] = GradientPattern(first, second)
+        }
+
+        Given("{variable} ← ring_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
+            SharedVars[name] = RingPattern(first, second)
         }
 
         Given("set_pattern_transform\\({pattern}, {matrix})") { pattern: Pattern, matrix: Matrix<D4> ->
