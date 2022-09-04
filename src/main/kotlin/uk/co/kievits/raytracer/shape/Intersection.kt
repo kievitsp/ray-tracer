@@ -16,6 +16,7 @@ data class Intersection(
         val isInside = normalVDotEyeV < 0
         val realNormalV = if (isInside) -normalV else normalV
         val normalEpsilon = realNormalV * EPSILON
+        val reflectV = ray.direction.reflect(realNormalV)
 
         return PartialResults(
             t = t,
@@ -24,7 +25,8 @@ data class Intersection(
             eyeV = eyeV,
             normalV = realNormalV,
             isInside = isInside,
-            overPoint = point + normalEpsilon
+            overPoint = point + normalEpsilon,
+            reflectV = reflectV,
         )
     }
 }

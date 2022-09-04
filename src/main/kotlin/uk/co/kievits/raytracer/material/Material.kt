@@ -16,6 +16,7 @@ data class Material(
     var diffuse: V = defaultDiffuse,
     var specular: V = defaultSpecular,
     var shininess: V = defaultShininess,
+    var reflective: V = defaultReflective,
 ) {
     constructor(
         color: COLOR = defaultColor,
@@ -96,5 +97,6 @@ data class Material(
         private const val defaultDiffuse: V = 0.9f
         private const val defaultSpecular: V = 0.9f
         private const val defaultShininess: V = 200f
+        private const val defaultReflective: V = 0f
     }
 }

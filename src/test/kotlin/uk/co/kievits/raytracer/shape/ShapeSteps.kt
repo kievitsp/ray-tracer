@@ -149,7 +149,7 @@ class ShapeSteps : En {
             pattern.transform = matrix
         }
 
-        When("{} ← intersection\\({float}, {shape})") { name: String, t: Float, shape: Shape ->
+        When("{} ← intersection\\({number}, {shape})") { name: String, t: Float, shape: Shape ->
             SharedVars[name] = Intersection(t, shape)
         }
 
@@ -257,6 +257,7 @@ class ShapeSteps : En {
         Then("{material}.diffuse = {float}") { material: Material, diffuse: Float -> assert(material.diffuse == diffuse) }
         Then("{material}.specular = {float}") { material: Material, specular: Float -> assert(material.specular == specular) }
         Then("{material}.shininess = {float}") { material: Material, shininess: Float -> assert(material.shininess == shininess) }
+        Then("{material}.reflective = {float}") { material: Material, reflective: Float -> assert(material.reflective == reflective) }
 
         Then("{material} = {material}") { actual: Material, exp: Material ->
             assert(actual == exp)
@@ -284,6 +285,7 @@ class ShapeSteps : En {
         Then("{comps}.eyev = {tuple}") { comps: PartialResults, eyev: VECTOR -> assert(comps.eyeV == eyev) }
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
+        Then("{comps}.reflectv = {tuple}") { comps: PartialResults, reflectv: VECTOR -> assert(comps.reflectV == reflectv) }
         Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float ->
             assert(comps.overPoint.z < exp)
         }

@@ -12,4 +12,5 @@ data class PartialResults(
     val normalV: VECTOR,
     val isInside: Boolean,
     val overPoint: POINT,
+    val reflectV: VECTOR,
 )
