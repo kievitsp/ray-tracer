@@ -81,6 +81,11 @@ class SphereSteps : En {
             assert(xs.size == count)
         }
 
+        Then("xs is empty") {
+            val xs = SharedVars.get<Intersections>("xs")
+            assert(xs.isEmpty())
+        }
+
         Then("{intersection}.t = {float}") { intersection: Intersection, exp: Float ->
             assert(intersection.t approx exp)
         }

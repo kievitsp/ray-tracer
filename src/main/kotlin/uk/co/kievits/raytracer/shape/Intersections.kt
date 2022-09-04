@@ -1,5 +1,7 @@
 package uk.co.kievits.raytracer.shape
 
+import uk.co.kievits.raytracer.base.V
+
 sealed class Intersections : List<Intersection> {
 
     abstract operator fun plus(other: Intersections): Intersections
@@ -43,6 +45,13 @@ sealed class Intersections : List<Intersection> {
     }
 
     companion object {
+        operator fun invoke(
+            t: V,
+            shape: Shape,
+        ): Intersections = Intersections.Hits(
+            listOf(Intersection(t, shape))
+        )
+
         operator fun invoke(
             hits: List<Intersection>,
             isSorted: Boolean = false,

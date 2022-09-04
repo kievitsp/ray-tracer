@@ -17,7 +17,7 @@ class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c|p)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c|p|n\\d)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -118,11 +118,11 @@ class ShapeSteps : En {
             SharedVars[name] = ray.transform(m)
         }
 
-        When("{} ← normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
+        When("{variable} ← normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
             SharedVars[name] = shape.normalAt(point)
         }
 
-        When("{} ← local_normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
+        When("{variable} ← local_normal_at\\({shape}, {tuple})") { name: String, shape: Shape, point: POINT ->
             SharedVars[name] = shape.localNormalAt(point)
         }
 
