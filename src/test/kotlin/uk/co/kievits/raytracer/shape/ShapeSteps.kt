@@ -15,6 +15,7 @@ import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
 import uk.co.kievits.raytracer.material.StripedPattern
+import uk.co.kievits.raytracer.material.TestPattern
 import uk.co.kievits.raytracer.world.World
 
 class ShapeSteps : En {
@@ -85,11 +86,18 @@ class ShapeSteps : En {
         }
 
         ParameterType("comps", "comps") { name -> SharedVars.get<PartialResults>(name) }
-        ParameterType("pattern", "pattern") { name -> SharedVars.get<Pattern>(name) }
+        ParameterType("pattern", "pattern|test_pattern\\(\\)") { name ->
+            when (name) {
+                "test_pattern()" -> TestPattern()
+                else -> SharedVars.get<Pattern>(name)
+            }
+        }
 
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
             SharedVars[name] = Ray(origin, direction)
         }
+
+        Given("{} ← {pattern}") { name: String, pattern: Pattern -> SharedVars[name] = pattern }
 
         Given("{} ← {intersections}") { name: String, intersections: Intersections ->
             SharedVars[name] = intersections
@@ -193,6 +201,10 @@ class ShapeSteps : En {
         }
 
         When("{variable} ← stripe_at_object\\({pattern}, {shape}, {tuple})") { name: String, pattern: StripedPattern, shape: Shape, point: POINT ->
+            SharedVars[name] = pattern.atShape(shape, point)
+        }
+
+        When("{variable} ← pattern_at_shape\\({pattern}, {shape}, {tuple})") { name: String, pattern: Pattern, shape: Shape, point: POINT ->
             SharedVars[name] = pattern.atShape(shape, point)
         }
 

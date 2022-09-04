@@ -11,5 +11,10 @@ abstract class Pattern(
     transform: Matrix<D4>,
 ) : WorldAware(transform) {
     abstract fun at(point: POINT): COLOR
-    abstract fun atShape(shape: Shape, point: POINT): COLOR
+    open fun atShape(shape: Shape, point: POINT): COLOR {
+        val shapePoint = shape.inverseTranspose * point
+        val patternPoint = inverseTransform * shapePoint
+
+        return at(patternPoint)
+    }
 }

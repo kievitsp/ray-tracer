@@ -14,13 +14,6 @@ class StripedPattern(
     transform: Matrix<D4> = IdentityMatrix(),
 ) : Pattern(transform) {
     override fun at(point: POINT): COLOR = if (floor(point.x) % 2.0f == .0f) first else second
-
-    override fun atShape(shape: Shape, point: POINT): COLOR {
-        val shapePoint = shape.inverseTranspose * point
-        val patternPoint = inverseTransform * shapePoint
-
-        return at(patternPoint)
-    }
 }
 
 data class SingleColorPattern(

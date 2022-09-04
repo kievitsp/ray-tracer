@@ -94,8 +94,9 @@ class SphereSteps : En {
             assert(intersection.shape == shape)
         }
 
-        Then("{shape}.transform = {matrix}") { shape: Shape, matrix: MATRIX ->
-            assert(shape.transform == matrix)
+        Then("{variable}.transform = {matrix}") { name: String, matrix: MATRIX ->
+            val value: WorldAware = SharedVars[name]
+            assert(value.transform == matrix)
         }
 
         Then("{shape}.material = {material}") { shape: Shape, material: Material ->
