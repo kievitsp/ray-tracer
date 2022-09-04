@@ -72,7 +72,7 @@ class SphereSteps : En {
             vars["xs"] = shape.intersections(ray)
         }
 
-        When("set_transform\\({shape}, {mVar})") { shape: Shape, matrix: Matrix<D4> ->
+        When("set_transform\\({shape}, {matrix})") { shape: Shape, matrix: Matrix<D4> ->
             shape.transform = matrix
         }
 
@@ -94,7 +94,7 @@ class SphereSteps : En {
             assert(intersection.shape == shape)
         }
 
-        Then("{shape}.transform = {mVar}") { shape: Shape, matrix: MATRIX ->
+        Then("{shape}.transform = {matrix}") { shape: Shape, matrix: MATRIX ->
             assert(shape.transform == matrix)
         }
 

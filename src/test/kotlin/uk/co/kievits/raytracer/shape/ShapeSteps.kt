@@ -11,19 +11,21 @@ import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
+import uk.co.kievits.raytracer.material.Pattern
+import uk.co.kievits.raytracer.material.StripedPattern
 import uk.co.kievits.raytracer.world.World
 
 class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c|p|n\\d)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c\\d?|p|n\\d|black|white)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
 
         ParameterType(
-            "mVar",
+            "matrix",
             "(m\\w*|t|IDENTITY_MATRIX|identity_matrix|)|" +
                 "(translation|scaling|shearing|rotation_[xyz])\\(${numberPattern}\\)"
         ) { name, function, args ->
@@ -81,6 +83,7 @@ class ShapeSteps : En {
         }
 
         ParameterType("comps", "comps") { name -> SharedVars.get<PartialResults>(name) }
+        ParameterType("pattern", "pattern") { name -> SharedVars.get<Pattern>(name) }
 
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
             SharedVars[name] = Ray(origin, direction)
@@ -90,12 +93,14 @@ class ShapeSteps : En {
             SharedVars[name] = intersections
         }
 
-        Given("{variable} ← {material}") { name: String, material: Material ->
-            SharedVars[name] = material
-        }
+        Given("{variable} ← {material}") { name: String, material: Material -> SharedVars[name] = material }
 
-        Given("{material}.ambient ← {float}") { material: Material, ambient: Float ->
-            material.ambient = ambient
+        Given("{material}.ambient ← {float}") { material: Material, ambient: Float -> material.ambient = ambient }
+        Given("{material}.diffuse ← {float}") { material: Material, diffuse: Float -> material.diffuse = diffuse }
+        Given("{material}.specular ← {float}") { material: Material, specular: Float -> material.specular = specular }
+
+        Given("{material}.pattern ← stripe_pattern\\({tuple}, {tuple})") { material: Material, a: COLOR, b: COLOR ->
+            material.pattern = StripedPattern(a, b)
         }
 
         Given("{variable} ← the first object in {world}") { name: String, w: World ->
@@ -110,11 +115,15 @@ class ShapeSteps : En {
             world.shapes.add(shape)
         }
 
+        Given("{variable} ← stripe_pattern\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
+            SharedVars[name] = StripedPattern(origin, direction)
+        }
+
         When("{} ← intersection\\({float}, {shape})") { name: String, t: Float, shape: Shape ->
             SharedVars[name] = Intersection(t, shape)
         }
 
-        When("{} ← transform\\({ray}, {mVar})") { name: String, ray: Ray, m: MATRIX ->
+        When("{} ← transform\\({ray}, {matrix})") { name: String, ray: Ray, m: MATRIX ->
             SharedVars[name] = ray.transform(m)
         }
 
@@ -250,6 +259,17 @@ class ShapeSteps : En {
 
         Then("is_shadowed\\({world}, {tuple}) is {boolean}") { w: World, p: POINT, shadow: Boolean ->
             assert(w.isShadowed(p) == shadow)
+        }
+
+        Then("{pattern}.a = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.first == color) }
+        Then("{pattern}.b = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.second == color) }
+
+        Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: StripedPattern, point: POINT, color: COLOR ->
+            assert(pattern.at(point) == color)
+        }
+
+        Then("stripe_at_object\\({pattern}, {shape}, {tuple}) = {tuple}") { pattern: StripedPattern, shape: Shape, point: POINT, color: COLOR ->
+            assert(pattern.at(point) == color)
         }
     }
 }

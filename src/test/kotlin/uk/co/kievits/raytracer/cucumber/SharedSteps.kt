@@ -54,7 +54,7 @@ class SharedSteps : En {
             SharedVars[name] = tuple
         }
 
-        Given("{variable} ← {mVar}") { name: String, matrix: MATRIX ->
+        Given("{variable} ← {matrix}") { name: String, matrix: MATRIX ->
             SharedVars[name] = matrix
         }
         Given("{variable} ← {world}") { name: String, world: World ->
@@ -73,7 +73,7 @@ class SharedSteps : En {
             assert(actual approx exp)
         }
 
-        Given("{variable} ← {mVar} * {mVar}") { name: String, m1: Matrix<D4>, m2: Matrix<D4> ->
+        Given("{variable} ← {matrix} * {matrix}") { name: String, m1: Matrix<D4>, m2: Matrix<D4> ->
             SharedVars.vars[name] = m1 * m2
         }
     }

@@ -30,7 +30,7 @@ class CameraSteps : En {
         }
 
         ParameterType(
-            "mVar",
+            "matrix",
             "(m\\w*|t|IDENTITY_MATRIX|identity_matrix|)|" +
                 "(translation|scaling|shearing|rotation_[xyz])\\(${SharedVars.numberPattern}\\)"
         ) { name, function, args ->
@@ -68,7 +68,7 @@ class CameraSteps : En {
             ray = camera.rayForPixel(px, py)
         }
 
-        When("c.transform ← {mVar} * {mVar}") { a: Matrix<D4>, b: Matrix<D4> ->
+        When("c.transform ← {matrix} * {matrix}") { a: Matrix<D4>, b: Matrix<D4> ->
             camera.transform = a * b
         }
 
@@ -84,7 +84,7 @@ class CameraSteps : En {
         Then("c.vsize = {number}") { expected: Float -> assert(camera.vSize == expected.toInt()) }
         Then("c.field_of_view = {number}") { expected: Float -> assert(camera.fieldOfView == expected) }
         Then("c.pixel_size = {number}") { expected: Float -> assert(camera.pixelSize approx expected) }
-        Then("c.transform = {mVar}") { expected: MATRIX -> assert(camera.transform == expected) }
+        Then("c.transform = {matrix}") { expected: MATRIX -> assert(camera.transform == expected) }
 
         Then("r.origin = {tuple}") { exp: TUPLE -> assert(ray.origin == exp) }
         Then("r.direction = {tuple}") { exp: TUPLE -> assert(ray.direction == exp) }

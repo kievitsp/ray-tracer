@@ -10,16 +10,39 @@ import uk.co.kievits.raytracer.light.PointLight
 import kotlin.math.pow
 
 data class Material(
-    var color: COLOR = defaultColor,
+    var pattern: Pattern,
     var ambient: V = defaultAmbient,
     var diffuse: V = defaultDiffuse,
     var specular: V = defaultSpecular,
     var shininess: V = defaultShininess,
 ) {
+    constructor(
+        color: COLOR = defaultColor,
+        ambient: V = defaultAmbient,
+        diffuse: V = defaultDiffuse,
+        specular: V = defaultSpecular,
+        shininess: V = defaultShininess,
+    ) : this(
+        pattern = SingleColorPattern(color),
+        ambient = ambient,
+        diffuse = diffuse,
+        specular = specular,
+        shininess = shininess,
+    )
+
+    var color: COLOR
+        get() {
+            val pattern = pattern as? SingleColorPattern ?: throw IllegalStateException("no single color $pattern")
+            return pattern.color
+        }
+        set(value) {
+            pattern = SingleColorPattern(value)
+        }
+
     override fun equals(other: Any?): Boolean {
         if (other !is Material) return false
 
-        return color approx other.color &&
+        return pattern == other.pattern &&
             ambient approx other.ambient &&
             diffuse approx other.diffuse &&
             specular approx other.specular &&
@@ -33,6 +56,7 @@ data class Material(
         normalV: VECTOR,
         isShadowed: Boolean,
     ): COLOR {
+        val color = pattern.at(point)
         val effectiveColor = color * light.intensity
         val lightV = (light.position - point).normalise
 
@@ -62,7 +86,7 @@ data class Material(
     }
 
     override fun toString(): String =
-        "Material(color=$color, ambient=$ambient, diffuse=$diffuse, specular=$specular, shininess=$shininess)"
+        "Material(pattern=$pattern, ambient=$ambient, diffuse=$diffuse, specular=$specular, shininess=$shininess)"
 
     companion object {
         private val defaultColor: COLOR = Color(1, 1, 1)

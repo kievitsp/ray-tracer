@@ -24,5 +24,4 @@ data class PartialResults(
         normalV = normalV,
         isShadowed = isShadowed,
     )
-
 }

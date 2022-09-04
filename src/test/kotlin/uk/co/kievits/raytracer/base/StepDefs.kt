@@ -44,14 +44,14 @@ class StepDefs : En {
         }
 
         ParameterType(
-            "mVar",
+            "matrix",
             "(t|[A-Z]\\w*|IDENTITY_MATRIX|identity_matrix|\\w{3,})|" +
                 "(translation|scaling|shearing|rotation_[xyz])\\($numberPattern\\)"
         ) { name, function, args ->
             SharedVars.buildMatrix(name, function, args)
         }
 
-        Then("{} ← submatrix\\({mVar}, {int}, {int})") { name: String, m: MATRIX, x: Int, y: Int ->
+        Then("{} ← submatrix\\({matrix}, {int}, {int})") { name: String, m: MATRIX, x: Int, y: Int ->
             vars[name] = m.subMatrix(x, y)
         }
 
@@ -60,8 +60,8 @@ class StepDefs : En {
         Given("the following 3x3 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
 
         Given("the following matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
-        Given("{} ← transpose\\({mVar})") { name: String, m: MATRIX -> vars[name] = m.transpose() }
-        Given("{} ← inverse\\({mVar})") { name: String, m: MATRIX -> vars[name] = m.inverse() }
+        Given("{} ← transpose\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.transpose() }
+        Given("{} ← inverse\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.inverse() }
 
         Then("{tuple}.x = {float}") { tuple: TUPLE, value: Float -> assert(tuple.x == value) }
         Then("{tuple}.y = {float}") { tuple: TUPLE, value: Float -> assert(tuple.y == value) }
@@ -119,29 +119,29 @@ class StepDefs : En {
         Then("dot\\({tuple}, {tuple}) = {float}") { a: TUPLE, b: TUPLE, exp: Float -> assert(a dot b == exp) }
         Then("cross\\({tuple}, {tuple}) = {tuple}") { a: TUPLE, b: TUPLE, exp: TUPLE -> assert(a cross b == exp) }
 
-        Then("{mVar}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Float ->
+        Then("{matrix}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Float ->
             assert(matrix[x, y] approx number)
         }
 
-        Then("{mVar} = {mVar}") { a: MATRIX, b: MATRIX -> assert(a approx b) }
-        Then("{mVar} != {mVar}") { a: MATRIX, b: MATRIX -> assert(a napprox b) }
+        Then("{matrix} = {matrix}") { a: MATRIX, b: MATRIX -> assert(a approx b) }
+        Then("{matrix} != {matrix}") { a: MATRIX, b: MATRIX -> assert(a napprox b) }
 
-        Then("{mVar} * {mVar} is the following 4x4 matrix:") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
+        Then("{matrix} * {matrix} is the following 4x4 matrix:") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             assert(a * b == c)
         }
-        Then("{mVar} * {mVar} = {mVar}") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
-            assert(a * b == c)
-        }
-
-        Then("{mVar} * {tuple} = {tuple}") { a: MATRIX, b: TUPLE, c: TUPLE ->
+        Then("{matrix} * {matrix} = {matrix}") { a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             assert(a * b == c)
         }
 
-        When("{} ← {mVar} * {tuple}") { name: String, a: MATRIX, b: TUPLE ->
+        Then("{matrix} * {tuple} = {tuple}") { a: MATRIX, b: TUPLE, c: TUPLE ->
+            assert(a * b == c)
+        }
+
+        When("{} ← {matrix} * {tuple}") { name: String, a: MATRIX, b: TUPLE ->
             vars[name] = a * b
         }
 
-        When("{} ← {mVar} * {mVar} * {mVar}") { name: String, a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
+        When("{} ← {matrix} * {matrix} * {matrix}") { name: String, a: Matrix<D4>, b: Matrix<D4>, c: Matrix<D4> ->
             vars[name] = a * b * c
         }
 
@@ -153,42 +153,42 @@ class StepDefs : En {
             SharedVars[name] = viewTransformation(from, to, up)
         }
 
-        Then("transpose\\({mVar}) is the following matrix:") { a: MATRIX, b: MATRIX ->
+        Then("transpose\\({matrix}) is the following matrix:") { a: MATRIX, b: MATRIX ->
             assert(a.transpose() == b)
         }
 
-        Then("determinant\\({mVar}) = {float}") { a: MATRIX, value: Float ->
+        Then("determinant\\({matrix}) = {float}") { a: MATRIX, value: Float ->
             assert(a.determinant() == value)
         }
 
-        Then("submatrix\\({mVar}, {int}, {int}) is the following 3x3 matrix:") { m: MATRIX, x: Int, y: Int, exp: MATRIX ->
+        Then("submatrix\\({matrix}, {int}, {int}) is the following 3x3 matrix:") { m: MATRIX, x: Int, y: Int, exp: MATRIX ->
             assert(m.subMatrix(x, y) == exp)
         }
 
-        Then("submatrix\\({mVar}, {int}, {int}) is the following 2x2 matrix:") { m: MATRIX, x: Int, y: Int, exp: MATRIX ->
+        Then("submatrix\\({matrix}, {int}, {int}) is the following 2x2 matrix:") { m: MATRIX, x: Int, y: Int, exp: MATRIX ->
             assert(m.subMatrix(x, y) == exp)
         }
-        Then("inverse\\({mVar}) is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
+        Then("inverse\\({matrix}) is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
             assert(m.inverse() approx exp)
         }
 
-        Then("{mVar} is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
+        Then("{matrix} is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
             assert(m approx exp)
         }
 
-        Then("minor\\({mVar}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
+        Then("minor\\({matrix}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
             assert(m.minor(x, y) == exp)
         }
 
-        Then("cofactor\\({mVar}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
+        Then("cofactor\\({matrix}, {int}, {int}) = {float}") { m: MATRIX, x: Int, y: Int, exp: Float ->
             assert(m.cofactor(x, y) == exp)
         }
 
-        Then("{mVar} is invertible") { m: MATRIX -> assert(m.isInvertable()) }
-        Then("{mVar} is not invertible") { m: MATRIX -> assert(!m.isInvertable()) }
+        Then("{matrix} is invertible") { m: MATRIX -> assert(m.isInvertable()) }
+        Then("{matrix} is not invertible") { m: MATRIX -> assert(!m.isInvertable()) }
 
-        Then("{mVar} * inverse\\({mVar}) = {mVar}") { mVar: Matrix<D4>, mVar2: Matrix<D4>, mVar3: Matrix<D4> ->
-            assert(mVar * mVar2.inverse() == mVar3)
+        Then("{matrix} * inverse\\({matrix}) = {matrix}") { matrix: Matrix<D4>, matrix2: Matrix<D4>, matrix3: Matrix<D4> ->
+            assert(matrix * matrix2.inverse() == matrix3)
         }
 
         Then("position\\({}, {float}) = {tuple}") { name: String, point: Float, exp: TUPLE ->
