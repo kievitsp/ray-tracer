@@ -237,7 +237,9 @@ class ShapeSteps : En {
         Then("{comps}.eyev = {tuple}") { comps: PartialResults, eyev: VECTOR -> assert(comps.eyeV == eyev) }
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
-        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float -> assert(comps.overPoint.z == exp) }
+        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float ->
+            assert(comps.overPoint.z < exp)
+        }
         Then("{comps}.point.z > {comps}.over_point.z") { a: PartialResults, b: PartialResults ->
             assert(a.point.z > b.overPoint.z)
         }
