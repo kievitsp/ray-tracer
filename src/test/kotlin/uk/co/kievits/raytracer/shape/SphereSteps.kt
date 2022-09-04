@@ -65,10 +65,11 @@ class SphereSteps : En {
         }
 
         When("xs ← local_intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
-            vars["xs"] = shape.intersections(ray)
-        }
-        When("xs ← intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
             vars["xs"] = shape.localIntersections(ray)
+        }
+
+        When("xs ← intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
+            vars["xs"] = shape.intersections(ray)
         }
 
         When("set_transform\\({shape}, {mVar})") { shape: Shape, matrix: Matrix<D4> ->
