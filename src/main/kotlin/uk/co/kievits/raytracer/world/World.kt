@@ -27,7 +27,15 @@ data class World(
 
     fun shadeHit(comps: PartialResults): COLOR {
         val light = light ?: return Colors.BLACK
-        return comps.shadeHit(light)
+        val isShadowed = isShadowed(comps.overPoint)
+
+        return comps.shape.material.lighting(
+            light = light,
+            point = comps.overPoint,
+            eyeV = comps.eyeV,
+            normalV = comps.normalV,
+            isShadowed = isShadowed,
+        )
     }
 
     fun colorAt(ray: Ray): COLOR {

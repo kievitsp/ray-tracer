@@ -1,12 +1,13 @@
 package uk.co.kievits.raytracer.base
 
 import io.cucumber.java8.En
+import uk.co.kievits.raytracer.canvas.PpmCanvas
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.get
 import uk.co.kievits.raytracer.cucumber.SharedVars.vars
 
 class CanvasSteps : En {
-    lateinit var canvas: Canvas
+    lateinit var canvas: PpmCanvas
 
     init {
         ParameterType(
@@ -14,7 +15,7 @@ class CanvasSteps : En {
             "canvas\\((.*?)\\)",
         ) { args: String ->
             val ints = SharedVars.parseFloats(args).map { it.toInt() }
-            Canvas(ints[0], ints[1])
+            PpmCanvas(ints[0], ints[1])
         }
         Given("c ← {canvas}") { canvas: CANVAS ->
             this.canvas = canvas

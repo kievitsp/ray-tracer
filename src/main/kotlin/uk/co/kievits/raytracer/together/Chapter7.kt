@@ -9,6 +9,7 @@ import uk.co.kievits.raytracer.base.rotationY
 import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
+import uk.co.kievits.raytracer.canvas.ImageType
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.model.Sphere
 import uk.co.kievits.raytracer.world.Camera
@@ -84,9 +85,9 @@ fun main() {
     )
 
     val camera = Camera(
-        1600,
-        1600,
-        (PI / 3).toFloat(),
+        hSize = 600,
+        vSize = 600,
+        fieldOfView = (PI / 3).toFloat(),
     )
 
     camera.transform = viewTransformation(
@@ -95,24 +96,24 @@ fun main() {
         Vector(0, 1, 0)
     )
 
-    val (image, time) = measureTimedValue {
-        camera.render(world)
-    }
+//    val (image, time) = measureTimedValue {
+// //        camera.render(world)
+//    }
+//
+//    // 50.603431300s
+//    println("normal time $time")
 
-    // 50.603431300s
-    println("normal time $time")
-
-    val (_, aSyncTime) = measureTimedValue {
-        runBlocking { camera.renderAsync(world) }
+    val (image, aSyncTime) = measureTimedValue {
+        runBlocking { camera.render(world, ImageType.PNG) }
     }
 
     // 17.521477800s
     println("async time $aSyncTime")
 
-    val path = Paths.get("./chapter7.ppm")
+    val path = Paths.get("./chapter7.png")
 
-    Files.newBufferedWriter(path).use {
-        image.toPpm(it)
+    Files.newOutputStream(path).use {
+        image.write(it)
     }
 
     exitProcess(0)

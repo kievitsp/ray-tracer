@@ -1,6 +1,7 @@
 package uk.co.kievits.raytracer.cucumber
 
 import uk.co.kievits.raytracer.base.Color
+import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Point
@@ -17,7 +18,7 @@ import kotlin.math.sqrt
 
 object SharedVars {
     private val numberSplitter = ", ?".toRegex()
-    const val numberPattern = "([-0-9, .√π/]+)"
+    const val numberPattern = "((?:EPSILON|[-0-9, .√π/])+)"
 
     @PublishedApi
     internal val vars = mutableMapOf<String, Any>()
@@ -54,6 +55,7 @@ object SharedVars {
         string.startsWith("√") -> sqrt(parseFloat(string.substring(1)))
         string.startsWith("-") -> -parseFloat(string.substring(1))
         string == "π" -> PI.toFloat()
+        string == "EPSILON" -> EPSILON
         else -> string.toFloat()
     }
 

@@ -8,13 +8,14 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import uk.co.kievits.raytracer.base.COLOR
-import uk.co.kievits.raytracer.base.Canvas
 import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.V
+import uk.co.kievits.raytracer.canvas.Canvas
+import uk.co.kievits.raytracer.canvas.ImageType
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.tan
@@ -74,9 +75,19 @@ class Camera(
         return Ray(origin, direction)
     }
 
-    fun render(world: World): Canvas {
-        val image = Canvas(hSize, vSize)
+    fun <C : Canvas> render(
+        world: World,
+        imageType: ImageType<C>,
+    ): C = render(world, imageType(hSize, vSize))
 
+    fun render(
+        world: World
+    ) = render(world, ImageType.PPM)
+
+    fun <C : Canvas> render(
+        world: World,
+        image: C,
+    ): C {
         for (y in 0 until vSize) {
             for (x in 0 until vSize) {
                 val ray = rayForPixel(x, y)
@@ -88,15 +99,22 @@ class Camera(
         return image
     }
 
-    suspend fun renderAsync(world: World): Canvas {
-        val image = Canvas(hSize, vSize)
+    suspend fun <C : Canvas> renderAsync(
+        world: World,
+        imageType: ImageType<C>,
+    ): C = renderAsync(world, imageType(hSize, vSize))
+
+    suspend fun <C : Canvas> renderAsync(
+        world: World,
+        image: C,
+    ): C {
         sequence {
             for (y in 0 until vSize) {
                 for (x in 0 until vSize) {
                     yield(CanvasPixel(x, y))
                 }
             }
-        }.chunked(100)
+        }.chunked(1000)
             .asFlow()
             .flowOn(coroutineContext)
             .map { list ->

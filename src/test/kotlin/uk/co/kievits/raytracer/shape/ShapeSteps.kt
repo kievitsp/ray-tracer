@@ -107,6 +107,10 @@ class ShapeSteps : En {
             SharedVars[name] = w.shapes.first { it != w.shapes.first() }
         }
 
+        Given("{sphere} is added to {world}") { sphere: Sphere, world: World ->
+            world.shapes.add(sphere)
+        }
+
         When("{} ← intersection\\({float}, {sphere})") { name: String, t: Float, sphere: Sphere ->
             SharedVars[name] = Intersection(t, sphere)
         }
@@ -203,7 +207,6 @@ class ShapeSteps : En {
         Then("{material}.diffuse = {float}") { material: Material, diffuse: Float -> assert(material.diffuse == diffuse) }
         Then("{material}.specular = {float}") { material: Material, specular: Float -> assert(material.specular == specular) }
         Then("{material}.shininess = {float}") { material: Material, shininess: Float -> assert(material.shininess == shininess) }
-//        Then("{material}.reflective = {float}") { material: Material, reflective: Float -> assert(material.reflective == reflective) }
 
         Then("{material} = {material}") { actual: Material, exp: Material ->
             assert(actual == exp)
@@ -231,6 +234,10 @@ class ShapeSteps : En {
         Then("{comps}.eyev = {tuple}") { comps: PartialResults, eyev: VECTOR -> assert(comps.eyeV == eyev) }
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
+        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float -> assert(comps.overPoint.z == exp) }
+        Then("{comps}.point.z > {comps}.over_point.z") { a: PartialResults, b: PartialResults ->
+            assert(a.point.z > b.overPoint.z)
+        }
 
         Then("{tuple} = {sphere}.material.color") { color: COLOR, sphere: Sphere ->
             assert(color == sphere.material.color)

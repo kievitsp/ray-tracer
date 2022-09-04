@@ -3,6 +3,7 @@ package uk.co.kievits.raytracer.base
 import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorOperators
 import jdk.incubator.vector.VectorShuffle
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class Tuple(
@@ -107,6 +108,13 @@ class Tuple(
         private val zxyShuffle = VectorShuffle.fromArray(SPECIES, intArrayOf(2, 0, 1, 3), 0)
     }
 }
+
+val V.bitValue: Int
+    get() = when {
+        this > 1.0 -> 255
+        this < 0 -> 0
+        else -> (this * 255.0).roundToInt()
+    }
 
 operator fun FloatVector.plus(other: FloatVector) = add(other)
 operator fun FloatVector.minus(other: FloatVector) = sub(other)

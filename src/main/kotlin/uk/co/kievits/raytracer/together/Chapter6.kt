@@ -1,9 +1,9 @@
 package uk.co.kievits.raytracer.together
 
-import uk.co.kievits.raytracer.base.Canvas
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
+import uk.co.kievits.raytracer.canvas.PpmCanvas
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.model.Sphere
 import java.nio.file.Files
@@ -12,22 +12,16 @@ import java.nio.file.Paths
 fun main() {
     val sphere = Sphere()
     sphere.material.color = Color(1, .2, 1)
-    val canvas = Canvas(800, 800)
+    val canvas = PpmCanvas(800, 600)
     val cameraPoint = Point(0, 0, -1.5)
     val light = PointLight(Point(-10, 10, -10), Color(.5, .5, .5))
     var hits = 0
 
-    val end = 400
-    val start = -end
+    val midHeight = canvas.height / 2
+    val midWidth = canvas.width / 2
 
-//    val cStart = -20
-//    val cEnd = 20
-
-    val cStart = start
-    val cEnd = end
-
-    for (x in cStart until cEnd) {
-        for (y in cStart until cEnd) {
+    for (x in -midHeight until midHeight) {
+        for (y in -midWidth until midWidth) {
             val point = Point(x, y, 200)
             val vector = point - cameraPoint
             val ray = Ray(origin = cameraPoint, direction = vector)
@@ -40,7 +34,7 @@ fun main() {
                 val normal = hit.shape.normalAt(point)
                 val eye = -ray.direction
                 val color = material.lighting(light, point, eye, normal, false)
-                canvas[x + end, y + end] = color
+                canvas[x + midHeight, y + midWidth] = color
             }
         }
     }

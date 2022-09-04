@@ -2,7 +2,6 @@ package uk.co.kievits.raytracer.camera
 
 import io.cucumber.java8.En
 import uk.co.kievits.raytracer.base.COLOR
-import uk.co.kievits.raytracer.base.Canvas
 import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Matrix
@@ -12,6 +11,7 @@ import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.base.approx
 import uk.co.kievits.raytracer.base.viewTransformation
+import uk.co.kievits.raytracer.canvas.PpmCanvas
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.world.Camera
 import uk.co.kievits.raytracer.world.World
@@ -19,7 +19,7 @@ import uk.co.kievits.raytracer.world.World
 class CameraSteps : En {
     private lateinit var camera: Camera
     private lateinit var ray: Ray
-    private lateinit var image: Canvas
+    private lateinit var image: PpmCanvas
 
     init {
         ParameterType(

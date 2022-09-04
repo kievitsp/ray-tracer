@@ -1,18 +1,23 @@
-package uk.co.kievits.raytracer.base
+package uk.co.kievits.raytracer.canvas
 
+import uk.co.kievits.raytracer.base.COLOR
+import uk.co.kievits.raytracer.base.Colors
+import uk.co.kievits.raytracer.base.bitValue
+import java.io.BufferedWriter
 import java.io.CharArrayWriter
+import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.io.Writer
-import kotlin.math.roundToInt
 
-class Canvas(
-    val width: Int,
-    val height: Int,
-) {
+class PpmCanvas(
+    override val width: Int,
+    override val height: Int,
+) : Canvas {
     private val data = Array(height * width) {
         Colors.BLACK
     }
 
-    operator fun set(x: Int, y: Int, color: COLOR) {
+    override operator fun set(x: Int, y: Int, color: COLOR) {
         require(x in 0 until width) { "$x, max $width" }
         require(y in 0 until height) { "$y, max $height" }
         data[x + y * width] = color
@@ -29,6 +34,10 @@ class Canvas(
         toPpm(writer)
         return writer.toString()
     }
+
+    override fun write(
+        outputStream: OutputStream
+    ) = toPpm(BufferedWriter(OutputStreamWriter(outputStream)))
 
     fun toPpm(writer: Writer) {
         writer.write("P3\n$width $height\n255")
@@ -69,11 +78,4 @@ class Canvas(
 
         return lineSize + numberSize
     }
-
-    private val V.bitValue: Int
-        get() = when {
-            this > 1.0 -> 255
-            this < 0 -> 0
-            else -> (this * 255.0).roundToInt()
-        }
 }

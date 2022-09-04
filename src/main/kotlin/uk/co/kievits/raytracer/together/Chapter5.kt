@@ -1,16 +1,16 @@
 package uk.co.kievits.raytracer.together
 
-import uk.co.kievits.raytracer.base.Canvas
 import uk.co.kievits.raytracer.base.Colors
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
+import uk.co.kievits.raytracer.canvas.PpmCanvas
 import uk.co.kievits.raytracer.model.Sphere
 import java.nio.file.Files
 import java.nio.file.Paths
 
 fun main() {
     val sphere = Sphere()
-    val canvas = Canvas(800, 800)
+    val canvas = PpmCanvas(800, 800)
     val cameraPoint = Point(0, 0, -2)
     var hits = 0
 

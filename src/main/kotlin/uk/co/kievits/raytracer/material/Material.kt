@@ -31,17 +31,19 @@ data class Material(
         point: POINT,
         eyeV: VECTOR,
         normalV: VECTOR,
-        inShadow: Boolean,
+        isShadowed: Boolean,
     ): COLOR {
         val effectiveColor = color * light.intensity
         val lightV = (light.position - point).normalise
 
         val ambient = effectiveColor * this.ambient
 
+        if (isShadowed) return ambient
+
         val lightDotNormal = lightV dot normalV
 
         return when {
-            inShadow || lightDotNormal < 0 -> ambient
+            lightDotNormal < 0 -> ambient
             else -> {
                 val diffuse: COLOR = effectiveColor * this.diffuse * lightDotNormal
                 val reflectV = (-lightV) reflect normalV

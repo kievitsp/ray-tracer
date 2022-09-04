@@ -1,6 +1,6 @@
 package uk.co.kievits.raytracer.base
 
-class Ray(
+data class Ray(
     val origin: POINT,
     val direction: VECTOR,
 ) {
