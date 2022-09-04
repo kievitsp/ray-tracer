@@ -12,6 +12,7 @@ import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
+import uk.co.kievits.raytracer.material.GradientPattern
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
 import uk.co.kievits.raytracer.material.StripedPattern
@@ -125,8 +126,12 @@ class ShapeSteps : En {
             world.shapes.add(shape)
         }
 
-        Given("{variable} ← stripe_pattern\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
-            SharedVars[name] = StripedPattern(origin, direction)
+        Given("{variable} ← stripe_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
+            SharedVars[name] = StripedPattern(first, second)
+        }
+
+        Given("{variable} ← gradient_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
+            SharedVars[name] = GradientPattern(first, second)
         }
 
         Given("set_pattern_transform\\({pattern}, {matrix})") { pattern: Pattern, matrix: Matrix<D4> ->
@@ -286,7 +291,11 @@ class ShapeSteps : En {
         Then("{pattern}.a = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.first == color) }
         Then("{pattern}.b = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.second == color) }
 
-        Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: StripedPattern, point: POINT, color: COLOR ->
+        Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: Pattern, point: POINT, color: COLOR ->
+            assert(pattern.at(point) == color)
+        }
+
+        Then("pattern_at\\({pattern}, {tuple}) = {tuple}") { pattern: Pattern, point: POINT, color: COLOR ->
             assert(pattern.at(point) == color)
         }
     }
