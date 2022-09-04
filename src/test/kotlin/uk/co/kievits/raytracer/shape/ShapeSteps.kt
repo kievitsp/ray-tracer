@@ -12,6 +12,7 @@ import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
+import uk.co.kievits.raytracer.material.CheckeredPattern
 import uk.co.kievits.raytracer.material.GradientPattern
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
@@ -137,6 +138,10 @@ class ShapeSteps : En {
 
         Given("{variable} ← ring_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
             SharedVars[name] = RingPattern(first, second)
+        }
+
+        Given("{variable} ← checkers_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
+            SharedVars[name] = CheckeredPattern(first, second)
         }
 
         Given("set_pattern_transform\\({pattern}, {matrix})") { pattern: Pattern, matrix: Matrix<D4> ->

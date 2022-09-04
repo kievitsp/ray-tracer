@@ -98,20 +98,20 @@ Scenario: A ring should extend in both x and z
     # 0.708 = just slightly more than √2/2
     And pattern_at(pattern, point(0.708, 0, 0.708)) = black
 
-#Scenario: Checkers should repeat in x
-#  Given pattern ← checkers_pattern(white, black)
-#  Then pattern_at(pattern, point(0, 0, 0)) = white
-#    And pattern_at(pattern, point(0.99, 0, 0)) = white
-#    And pattern_at(pattern, point(1.01, 0, 0)) = black
-#
-#Scenario: Checkers should repeat in y
-#  Given pattern ← checkers_pattern(white, black)
-#  Then pattern_at(pattern, point(0, 0, 0)) = white
-#    And pattern_at(pattern, point(0, 0.99, 0)) = white
-#    And pattern_at(pattern, point(0, 1.01, 0)) = black
-#
-#Scenario: Checkers should repeat in z
-#  Given pattern ← checkers_pattern(white, black)
-#  Then pattern_at(pattern, point(0, 0, 0)) = white
-#    And pattern_at(pattern, point(0, 0, 0.99)) = white
-#    And pattern_at(pattern, point(0, 0, 1.01)) = black
+Scenario: Checkers should repeat in x
+  Given pattern ← checkers_pattern(white, black)
+  Then pattern_at(pattern, point(0, 0, 0)) = white
+    And pattern_at(pattern, point(0.99, 0, 0)) = white
+    And pattern_at(pattern, point(1.01, 0, 0)) = black
+
+Scenario: Checkers should repeat in y
+  Given pattern ← checkers_pattern(white, black)
+  Then pattern_at(pattern, point(0, 0, 0)) = white
+    And pattern_at(pattern, point(0, 0.99, 0)) = white
+    And pattern_at(pattern, point(0, 1.01, 0)) = black
+
+Scenario: Checkers should repeat in z
+  Given pattern ← checkers_pattern(white, black)
+  Then pattern_at(pattern, point(0, 0, 0)) = white
+    And pattern_at(pattern, point(0, 0, 0.99)) = white
+    And pattern_at(pattern, point(0, 0, 1.01)) = black
