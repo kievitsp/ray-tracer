@@ -23,7 +23,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([sp]\\w*|inner|outer)|(sphere|test_shape|plane)\\(\\)"
+            "([sp]\\w*|inner|outer|object)|(sphere|test_shape|plane)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)

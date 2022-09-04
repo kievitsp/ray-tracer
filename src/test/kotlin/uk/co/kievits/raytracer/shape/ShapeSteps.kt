@@ -2,7 +2,9 @@ package uk.co.kievits.raytracer.shape
 
 import io.cucumber.java8.En
 import uk.co.kievits.raytracer.base.COLOR
+import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.MATRIX
+import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.TUPLE
@@ -119,6 +121,10 @@ class ShapeSteps : En {
             SharedVars[name] = StripedPattern(origin, direction)
         }
 
+        Given("set_pattern_transform\\({pattern}, {matrix})") { pattern: Pattern, matrix: Matrix<D4> ->
+            pattern.transform = matrix
+        }
+
         When("{} ← intersection\\({float}, {shape})") { name: String, t: Float, shape: Shape ->
             SharedVars[name] = Intersection(t, shape)
         }
@@ -184,6 +190,10 @@ class ShapeSteps : En {
 
         When("{shape}.material.ambient ← {float}") { shape: Shape, ambient: Float ->
             shape.material.ambient = ambient
+        }
+
+        When("{variable} ← stripe_at_object\\({pattern}, {shape}, {tuple})") { name: String, pattern: StripedPattern, shape: Shape, point: POINT ->
+            SharedVars[name] = pattern.atShape(shape, point)
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
@@ -265,10 +275,6 @@ class ShapeSteps : En {
         Then("{pattern}.b = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.second == color) }
 
         Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: StripedPattern, point: POINT, color: COLOR ->
-            assert(pattern.at(point) == color)
-        }
-
-        Then("stripe_at_object\\({pattern}, {shape}, {tuple}) = {tuple}") { pattern: StripedPattern, shape: Shape, point: POINT, color: COLOR ->
             assert(pattern.at(point) == color)
         }
     }

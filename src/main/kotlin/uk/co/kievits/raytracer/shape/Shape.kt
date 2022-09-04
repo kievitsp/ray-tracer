@@ -8,12 +8,13 @@ import uk.co.kievits.raytracer.base.Tuple
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.material.Material
 
-abstract class Shape(
+abstract class WorldAware(
     transform: Matrix<D4>,
-    var material: Material,
 ) {
-    private var inverseTransform: Matrix<D4> = transform.inverse()
-    private var inverseTranspose: Matrix<D4> = inverseTransform.transpose()
+    var inverseTransform: Matrix<D4> = transform.inverse()
+        private set
+    var inverseTranspose: Matrix<D4> = inverseTransform.transpose()
+        private set
 
     var transform: Matrix<D4> = transform
         set(value) {
@@ -21,6 +22,12 @@ abstract class Shape(
             inverseTransform = value.inverse()
             inverseTranspose = inverseTransform.transpose()
         }
+}
+
+abstract class Shape(
+    transform: Matrix<D4>,
+    var material: Material,
+) : WorldAware(transform) {
 
     fun normalAt(
         worldPoint: POINT,
