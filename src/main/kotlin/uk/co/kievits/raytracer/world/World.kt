@@ -44,9 +44,13 @@ data class World(
     private fun lighting(
         comps: PartialResults,
         light: PointLight
-    ) = comps.lighting(
+    ) = comps.shape.material.lighting(
         light = light,
+        point = comps.overPoint,
+        eyeV = comps.eyeV,
+        normalV = comps.normalV,
         isShadowed = isShadowed(comps.overPoint, light),
+        shape = comps.shape,
     )
 
     fun colorAt(ray: Ray): COLOR {

@@ -8,6 +8,7 @@ import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Vector
 import uk.co.kievits.raytracer.base.rotationX
 import uk.co.kievits.raytracer.base.rotationY
+import uk.co.kievits.raytracer.base.rotationZ
 import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
@@ -36,20 +37,23 @@ fun main() {
 
     val leftWall = Plane().apply {
         transform = translation(0, 0, 5) *
-            rotationY(-PI / 4) * rotationX(PI / 2)
+                rotationY(-PI / 4) * rotationX(PI / 2)
         material = floor.material
     }
 
     val rightWall = Plane().apply {
         transform = translation(0, 0, 5) *
-            rotationY(PI / 4) * rotationX(PI / 2)
+                rotationY(PI / 4) * rotationX(PI / 2)
         material = floor.material
     }
 
     val middle = Sphere().apply {
         transform = translation(-0.5, 1, 0.5)
         material.apply {
-            color = Color(0.1, 1, .5)
+            pattern = StripedPattern(Color(0.1, 1, .5), Color(0.1, 0, .5)).apply {
+                transform = rotationY(PI / 3) * rotationZ(PI / 5) *
+                        scaling(0.1, 0.1, 0.1)
+            }
             diffuse = 0.7f
             specular = 0.3f
         }

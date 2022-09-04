@@ -165,11 +165,11 @@ class ShapeSteps : En {
         }
 
         When("{variable} ← lighting\\({material}, {light}, {tuple}, {tuple}, {tuple}\\)") { name: String, material: Material, light: PointLight, position: POINT, eyeV: VECTOR, normalV: VECTOR ->
-            SharedVars[name] = material.lighting(light, position, eyeV, normalV, false)
+            SharedVars[name] = material.lighting(light, position, eyeV, normalV, false, Sphere())
         }
 
         When("{variable} ← lighting\\({material}, {light}, {tuple}, {tuple}, {tuple}, {boolean}\\)") { name: String, material: Material, light: PointLight, position: POINT, eyeV: VECTOR, normalV: VECTOR, inShadow: Boolean ->
-            SharedVars[name] = material.lighting(light, position, eyeV, normalV, inShadow)
+            SharedVars[name] = material.lighting(light, position, eyeV, normalV, inShadow, Sphere())
         }
 
         When("{} ← {shape}.material") { name: String, shape: Shape ->

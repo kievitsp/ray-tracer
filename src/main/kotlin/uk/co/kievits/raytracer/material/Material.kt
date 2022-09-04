@@ -7,6 +7,7 @@ import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.base.approx
 import uk.co.kievits.raytracer.light.PointLight
+import uk.co.kievits.raytracer.shape.Shape
 import kotlin.math.pow
 
 data class Material(
@@ -55,8 +56,9 @@ data class Material(
         eyeV: VECTOR,
         normalV: VECTOR,
         isShadowed: Boolean,
+        shape: Shape,
     ): COLOR {
-        val color = pattern.at(point)
+        val color = pattern.atShape(shape, point)
         val effectiveColor = color * light.intensity
         val lightV = (light.position - point).normalise
 
