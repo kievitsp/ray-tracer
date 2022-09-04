@@ -30,7 +30,12 @@ import kotlin.time.measureTimedValue
 fun main() {
     val floor = Plane().apply {
         material.apply {
-            pattern = StripedPattern(BLACK, WHITE)
+            pattern =
+                (
+                StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE).apply {
+                    transform = rotationZ(PI / 4)
+                }
+                ) / 2
             specular = 0f
         }
     }
@@ -53,7 +58,7 @@ fun main() {
             pattern = StripedPattern(Color(0.1, 1, .5), Color(0.1, 0, .5)).apply {
                 transform = rotationY(PI / 3) * rotationZ(PI / 5) *
                     scaling(0.1, 0.1, 0.1)
-            }
+            }.perturbed(.75)
             diffuse = 0.7f
             specular = 0.3f
         }

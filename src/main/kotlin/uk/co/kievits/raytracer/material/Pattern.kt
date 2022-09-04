@@ -14,11 +14,12 @@ abstract class Pattern(
 
     constructor() : this(IdentityMatrix())
 
-    abstract fun at(point: POINT): COLOR
-    open fun atShape(shape: Shape, point: POINT): COLOR {
-        val shapePoint = shape.inverseTranspose * point
-        val patternPoint = inverseTransform * shapePoint
+    abstract fun atPattern(shapePoint: POINT): COLOR
 
-        return at(patternPoint)
-    }
+    open fun atShape(shape: Shape, point: POINT): COLOR = atPattern(shape.inverseTranspose * point)
+
+    fun perturbed(ratio: Number = 1f) = PerturbedPattern(this, ratio.toFloat())
+
+    operator fun plus(other: Pattern): Pattern = CombinedPattern(this, other)
+    operator fun div(scalar: Number): Pattern = DivisionPattern(this, scalar.toFloat())
 }

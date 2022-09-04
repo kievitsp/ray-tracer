@@ -24,7 +24,7 @@ data class Material(
         specular: V = defaultSpecular,
         shininess: V = defaultShininess,
     ) : this(
-        pattern = SingleColorPattern(color),
+        pattern = SolidPattern(color),
         ambient = ambient,
         diffuse = diffuse,
         specular = specular,
@@ -33,11 +33,11 @@ data class Material(
 
     var color: COLOR
         get() {
-            val pattern = pattern as? SingleColorPattern ?: throw IllegalStateException("no single color $pattern")
+            val pattern = pattern as? SolidPattern ?: throw IllegalStateException("no single color $pattern")
             return pattern.color
         }
         set(value) {
-            pattern = SingleColorPattern(value)
+            pattern = SolidPattern(value)
         }
 
     override fun equals(other: Any?): Boolean {

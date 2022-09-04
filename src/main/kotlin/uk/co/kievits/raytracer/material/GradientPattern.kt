@@ -7,6 +7,6 @@ import kotlin.math.floor
 class GradientPattern(
     val first: COLOR,
     val second: COLOR,
-) : Pattern() {
+) : BasePattern() {
     override fun at(point: POINT): COLOR = first + (second - first) * (point.x - floor(point.x))
 }

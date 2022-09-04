@@ -12,6 +12,7 @@ import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.light.PointLight
+import uk.co.kievits.raytracer.material.BasePattern
 import uk.co.kievits.raytracer.material.CheckeredPattern
 import uk.co.kievits.raytracer.material.GradientPattern
 import uk.co.kievits.raytracer.material.Material
@@ -301,12 +302,12 @@ class ShapeSteps : En {
         Then("{pattern}.a = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.first == color) }
         Then("{pattern}.b = {tuple}") { pattern: StripedPattern, color: COLOR -> assert(pattern.second == color) }
 
-        Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: Pattern, point: POINT, color: COLOR ->
-            assert(pattern.at(point) == color)
+        Then("stripe_at\\({pattern}, {tuple}) = {tuple}") { pattern: BasePattern, point: POINT, color: COLOR ->
+            assert(pattern.atPattern(point) == color)
         }
 
         Then("pattern_at\\({pattern}, {tuple}) = {tuple}") { pattern: Pattern, point: POINT, color: COLOR ->
-            assert(pattern.at(point) == color)
+            assert(pattern.atPattern(point) == color)
         }
     }
 }
