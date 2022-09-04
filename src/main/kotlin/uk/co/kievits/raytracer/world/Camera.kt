@@ -89,7 +89,7 @@ class Camera(
         image: C,
     ): C {
         for (y in 0 until vSize) {
-            for (x in 0 until vSize) {
+            for (x in 0 until hSize) {
                 val ray = rayForPixel(x, y)
                 val color = world.colorAt(ray)
                 image[x, y] = color

@@ -15,8 +15,19 @@ import uk.co.kievits.raytracer.shape.Sphere
 
 data class World(
     val shapes: MutableList<Shape> = mutableListOf(),
-    var light: PointLight? = null,
+    var lights: MutableList<PointLight>,
 ) {
+    constructor(
+        shapes: MutableList<Shape> = mutableListOf(),
+        light: PointLight? = null,
+    ) : this(shapes, listOfNotNull(light).toMutableList())
+
+    var light: PointLight?
+        get() = lights.firstOrNull()
+        set(value) {
+            lights.clear()
+            if (value != null) lights.add(value)
+        }
 
     fun intersections(ray: Ray): Intersections = Intersections(
         hits = shapes.asSequence()
@@ -26,18 +37,17 @@ data class World(
         isSorted = true
     )
 
-    fun shadeHit(comps: PartialResults): COLOR {
-        val light = light ?: return Colors.BLACK
-        val isShadowed = isShadowed(comps.overPoint)
-
-        return comps.shape.material.lighting(
-            light = light,
-            point = comps.overPoint,
-            eyeV = comps.eyeV,
-            normalV = comps.normalV,
-            isShadowed = isShadowed,
-        )
+    fun shadeHit(comps: PartialResults): COLOR = lights.fold(Colors.BLACK) { acc, light ->
+        acc + lighting(comps, light)
     }
+
+    private fun lighting(
+        comps: PartialResults,
+        light: PointLight
+    ) = comps.lighting(
+        light = light,
+        isShadowed = isShadowed(comps.overPoint, light),
+    )
 
     fun colorAt(ray: Ray): COLOR {
         val intersection = intersections(ray)
@@ -48,8 +58,11 @@ data class World(
         return shadeHit(precompute)
     }
 
-    fun isShadowed(point: POINT): Boolean {
-        val v = light!!.position - point
+    fun isShadowed(
+        point: POINT,
+        light: PointLight = this.light!!
+    ): Boolean {
+        val v = light.position - point
         val distance = v.magnitude
         val direction = v.normalise
 
