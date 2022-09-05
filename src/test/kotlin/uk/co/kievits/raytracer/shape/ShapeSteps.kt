@@ -26,7 +26,9 @@ class ShapeSteps : En {
     init {
         ParameterType(
             "tuple",
-            "(tuple|vector|point|color)\\(${numberPattern}\\)|(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|result|c\\d?|p|n\\d|black|white)",
+            "(tuple|vector|point|color)\\(${numberPattern}\\)|" +
+                "(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|" +
+                "result|c\\d?|p|n\\d|black|white|color)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }
@@ -222,6 +224,10 @@ class ShapeSteps : En {
 
         When("{variable} ← pattern_at_shape\\({pattern}, {shape}, {tuple})") { name: String, pattern: Pattern, shape: Shape, point: POINT ->
             SharedVars[name] = pattern.atShape(shape, point)
+        }
+
+        When("{variable} ← reflected_color\\({world}, {comps})") { name: String, world: World, comps: PartialResults ->
+            SharedVars[name] = world.reflectedColor(comps)
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->

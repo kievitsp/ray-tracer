@@ -83,7 +83,7 @@ class Tuple(
             .abs()
             .reduceLanes(VectorOperators.MAX)
 
-        return maxDiff < EPSILON
+        return maxDiff < (EPSILON * 2)
     }
 
     infix fun reflect(normal: Tuple): Tuple = this - (normal * 2f * (this dot normal))

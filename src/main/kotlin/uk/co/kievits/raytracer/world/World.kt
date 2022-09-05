@@ -3,6 +3,8 @@ package uk.co.kievits.raytracer.world
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors
+import uk.co.kievits.raytracer.base.Colors.BLACK
+import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Ray
@@ -52,6 +54,16 @@ data class World(
         isShadowed = isShadowed(comps.overPoint, light),
         shape = comps.shape,
     )
+
+    fun reflectedColor(comps: PartialResults): COLOR {
+        val reflective = comps.shape.material.reflective
+        if (reflective < EPSILON) return BLACK
+
+        val reflectRay = Ray(comps.overPoint, comps.reflectV)
+        val color = colorAt(reflectRay)
+
+        return color * reflective
+    }
 
     fun colorAt(ray: Ray): COLOR {
         val intersection = intersections(ray)

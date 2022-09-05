@@ -52,12 +52,14 @@ class SphereSteps : En {
                         }
 
                         "material.diffuse" -> material.diffuse = parseFloat(value)
+                        "material.reflective" -> material.reflective = parseFloat(value)
                         "material.specular" -> material.specular = parseFloat(value)
                         "transform" -> {
                             val matcher = "(\\w+)\\($numberPattern\\)".toRegex()
                             val result = matcher.matchEntire(value) ?: throw IllegalStateException(value)
                             transform = buildMatrix(null, result.groupValues[1], result.groupValues[2]) as Matrix<D4>
                         }
+                        else -> TODO(row[0])
                     }
                 }
             }
