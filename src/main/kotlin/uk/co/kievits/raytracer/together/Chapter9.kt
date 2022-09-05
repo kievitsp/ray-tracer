@@ -66,14 +66,14 @@ fun main() {
         }
     }
 
-    val right = Sphere().apply {
+    val right = Sphere.Glass().apply {
         transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
-        material.apply {
-            color = Color(0.5, 1, .1)
-            diffuse = 0.7f
-            specular = 0.3f
-            reflective = .05f
-        }
+//        material.apply {
+//            color = Color(0.5, 1, .1)
+//            diffuse = 0.7f
+//            specular = 0.3f
+//            reflective = .05f
+//        }
     }
 
     val left = Sphere().apply {
@@ -113,7 +113,7 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-        runBlocking { camera.render(world, ImageType.PNG) }
+        runBlocking { camera.renderAsync(world, ImageType.PNG) }
     }
 
     println("async time $aSyncTime")

@@ -11,6 +11,7 @@ import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
+import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloat
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.BasePattern
 import uk.co.kievits.raytracer.material.CheckeredPattern
@@ -82,7 +83,17 @@ class ShapeSteps : En {
             when (values) {
                 null -> SharedVars["xs"]
                 else -> {
-                    val intersections = values.split(',').map { SharedVars.get<Intersection>(it.trim()) }
+                    val intersections = when {
+                        ":" in values -> values.split(",")
+                            .map { it.trim() }
+                            .map {
+                                val split = it.split(":")
+                                Intersection(parseFloat(split[0]), SharedVars[split[1]])
+                            }
+
+                        else -> values.split(',').map { SharedVars[it.trim()] }
+                    }
+
                     when {
                         intersections.isEmpty() -> Intersections.Miss
                         else -> Intersections.Hits(intersections)
@@ -216,7 +227,11 @@ class ShapeSteps : En {
         }
 
         When("{variable} ← prepare_computations\\({intersection}, {ray})") { name: String, i: Intersection, r: Ray ->
-            SharedVars[name] = i.precompute(r)
+            SharedVars[name] = i.precompute(r, Intersections.Miss)
+        }
+
+        When("{variable} ← prepare_computations\\({intersection}, {ray}, {intersections})") { name: String, i: Intersection, r: Ray, xs: Intersections ->
+            SharedVars[name] = i.precompute(r, xs)
         }
 
         When("{world}.light ← point_light\\({tuple}, {tuple})") { world: World, point: POINT, color: COLOR ->
@@ -304,12 +319,12 @@ class ShapeSteps : En {
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
         Then("{comps}.reflectv = {tuple}") { comps: PartialResults, reflectv: VECTOR -> assert(comps.reflectV == reflectv) }
-        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float ->
-            assert(comps.overPoint.z < exp)
-        }
+        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float -> assert(comps.overPoint.z < exp) }
         Then("{comps}.point.z > {comps}.over_point.z") { a: PartialResults, b: PartialResults ->
             assert(a.point.z > b.overPoint.z)
         }
+        Then("{comps}.n1 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n1 == exp) }
+        Then("{comps}.n2 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n2 == exp) }
 
         Then("{tuple} = {shape}.material.color") { color: COLOR, shape: Shape ->
             assert(color == shape.material.color)

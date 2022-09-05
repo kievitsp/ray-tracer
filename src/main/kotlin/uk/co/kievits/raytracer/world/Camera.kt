@@ -110,7 +110,7 @@ class Camera(
     ): C {
         sequence {
             for (y in 0 until vSize) {
-                for (x in 0 until vSize) {
+                for (x in 0 until hSize) {
                     yield(CanvasPixel(x, y))
                 }
             }

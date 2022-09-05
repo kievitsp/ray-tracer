@@ -55,6 +55,7 @@ class SphereSteps : En {
                         "material.diffuse" -> material.diffuse = parseFloat(value)
                         "material.reflective" -> material.reflective = parseFloat(value)
                         "material.specular" -> material.specular = parseFloat(value)
+                        "material.refractive_index" -> material.refractiveIndex = parseFloat(value)
                         "transform" -> {
                             val matcher = "(\\w+)\\($numberPattern\\)".toRegex()
                             val result = matcher.matchEntire(value) ?: throw IllegalStateException(value)

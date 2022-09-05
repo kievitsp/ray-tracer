@@ -2,7 +2,6 @@ package uk.co.kievits.raytracer.world
 
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Color
-import uk.co.kievits.raytracer.base.Colors
 import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.POINT
@@ -77,10 +76,10 @@ data class World(
         ray: Ray,
         remaining: Int = 10,
     ): COLOR {
-        val intersection = intersections(ray)
-            .hit() ?: return Colors.BLACK
+        val intersections = intersections(ray)
+        val intersection = intersections.hit() ?: return BLACK
 
-        val precompute = intersection.precompute(ray)
+        val precompute = intersection.precompute(ray, intersections)
 
         return shadeHit(precompute, remaining)
     }
