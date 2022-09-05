@@ -52,6 +52,7 @@ data class Intersection(
             normalV = realNormalV,
             isInside = isInside,
             overPoint = point + normalEpsilon,
+            underPoint = point - normalEpsilon,
             reflectV = reflectV,
             n1 = n1,
             n2 = n2,

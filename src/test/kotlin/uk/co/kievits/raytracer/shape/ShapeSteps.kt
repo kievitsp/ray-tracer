@@ -320,8 +320,12 @@ class ShapeSteps : En {
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
         Then("{comps}.reflectv = {tuple}") { comps: PartialResults, reflectv: VECTOR -> assert(comps.reflectV == reflectv) }
         Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float -> assert(comps.overPoint.z < exp) }
+        Then("{comps}.under_point.z > {number}") { comps: PartialResults, exp: Float -> assert(comps.underPoint.z > exp) }
         Then("{comps}.point.z > {comps}.over_point.z") { a: PartialResults, b: PartialResults ->
             assert(a.point.z > b.overPoint.z)
+        }
+        Then("{comps}.point.z < {comps}.under_point.z") { a: PartialResults, b: PartialResults ->
+            assert(a.point.z < b.underPoint.z)
         }
         Then("{comps}.n1 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n1 == exp) }
         Then("{comps}.n2 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n2 == exp) }
