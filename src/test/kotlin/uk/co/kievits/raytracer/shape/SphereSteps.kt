@@ -16,6 +16,8 @@ import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloat
 import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloats
 import uk.co.kievits.raytracer.cucumber.SharedVars.vars
 import uk.co.kievits.raytracer.material.Material
+import uk.co.kievits.raytracer.material.Pattern
+import uk.co.kievits.raytracer.material.TestPattern
 import java.lang.IllegalStateException
 
 class SphereSteps : En {
@@ -23,7 +25,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([sp]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere)\\(\\)"
+            "([spAB]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)
@@ -36,37 +38,21 @@ class SphereSteps : En {
                 }
             }
         }
+        ParameterType("pattern", "pattern|test_pattern\\(\\)") { name ->
+            getPattern(name)
+        }
 
         Given("{variable} ← {shape}") { name: String, shape: Shape ->
             SharedVars[name] = shape
         }
 
         Given("{} ← {shape} with:") { name: String, shape: Shape, data: DataTable ->
-            shape.apply {
-                for (r in 0 until data.height()) {
-                    val row = data.row(r)
-                    val value = row[1]
-                    when (row[0]) {
-                        "material.color" -> {
-                            val floats = parseFloats(value.substring(1 until value.length - 1))
-                            material.color = Color(floats[0], floats[1], floats[2])
-                        }
-
-                        "material.diffuse" -> material.diffuse = parseFloat(value)
-                        "material.reflective" -> material.reflective = parseFloat(value)
-                        "material.specular" -> material.specular = parseFloat(value)
-                        "material.refractive_index" -> material.refractiveIndex = parseFloat(value)
-                        "transform" -> {
-                            val matcher = "(\\w+)\\($numberPattern\\)".toRegex()
-                            val result = matcher.matchEntire(value) ?: throw IllegalStateException(value)
-                            transform = buildMatrix(null, result.groupValues[1], result.groupValues[2]) as Matrix<D4>
-                        }
-
-                        else -> TODO(row[0])
-                    }
-                }
-            }
+            applyShapeData(shape, data)
             SharedVars[name] = shape
+        }
+
+        Given("{shape} has:") { shape: Shape, data: DataTable ->
+            applyShapeData(shape, data)
         }
 
         When("xs ← local_intersect\\({shape}, {ray})") { shape: Shape, ray: Ray ->
@@ -118,6 +104,41 @@ class SphereSteps : En {
 
         Then("{shape}.material.{variable} = {float}") { shape: Shape, variable: String, exp: Float ->
             assertMaterial(shape.material, variable, exp)
+        }
+    }
+
+    private fun getPattern(name: String) = when (name) {
+        "test_pattern()" -> TestPattern()
+        else -> SharedVars.get<Pattern>(name)
+    }
+
+    private fun applyShapeData(shape: Shape, data: DataTable) {
+        shape.apply {
+            for (r in 0 until data.height()) {
+                val row = data.row(r)
+                val value = row[1]
+                when (row[0]) {
+                    "material.color" -> {
+                        val floats = parseFloats(value.substring(1 until value.length - 1))
+                        material.color = Color(floats[0], floats[1], floats[2])
+                    }
+
+                    "material.diffuse" -> material.diffuse = parseFloat(value)
+                    "material.reflective" -> material.reflective = parseFloat(value)
+                    "material.specular" -> material.specular = parseFloat(value)
+                    "material.refractive_index" -> material.refractiveIndex = parseFloat(value)
+                    "material.transparency" -> material.transparency = parseFloat(value)
+                    "material.ambient" -> material.ambient = parseFloat(value)
+                    "material.pattern" -> material.pattern = getPattern(value)
+                    "transform" -> {
+                        val matcher = "(\\w+)\\($numberPattern\\)".toRegex()
+                        val result = matcher.matchEntire(value) ?: throw IllegalStateException(value)
+                        transform = buildMatrix(null, result.groupValues[1], result.groupValues[2]) as Matrix<D4>
+                    }
+
+                    else -> TODO(row[0])
+                }
+            }
         }
     }
 }

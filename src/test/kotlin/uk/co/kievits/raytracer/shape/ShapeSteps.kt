@@ -20,7 +20,6 @@ import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
 import uk.co.kievits.raytracer.material.RingPattern
 import uk.co.kievits.raytracer.material.StripedPattern
-import uk.co.kievits.raytracer.material.TestPattern
 import uk.co.kievits.raytracer.world.World
 
 class ShapeSteps : En {
@@ -103,12 +102,6 @@ class ShapeSteps : En {
         }
 
         ParameterType("comps", "comps") { name -> SharedVars.get<PartialResults>(name) }
-        ParameterType("pattern", "pattern|test_pattern\\(\\)") { name ->
-            when (name) {
-                "test_pattern()" -> TestPattern()
-                else -> SharedVars.get<Pattern>(name)
-            }
-        }
 
         Given("{} ← ray\\({tuple}, {tuple})") { name: String, origin: TUPLE, direction: TUPLE ->
             SharedVars[name] = Ray(origin, direction)
@@ -195,6 +188,10 @@ class ShapeSteps : En {
             SharedVars[variable] = world.shadeHit(comps)
         }
 
+        When("{variable} ← shade_hit\\({world}, {comps}, {int})") { variable: String, world: World, comps: PartialResults, remaining: Int ->
+            SharedVars[variable] = world.shadeHit(comps, remaining)
+        }
+
         When("{variable} ← color_at\\({world}, {ray})") { variable: String, world: World, ray: Ray ->
             SharedVars[variable] = world.colorAt(ray)
         }
@@ -256,6 +253,10 @@ class ShapeSteps : En {
 
         When("{variable} ← reflected_color\\({world}, {comps}, {int})") { name: String, world: World, comps: PartialResults, limit: Int ->
             SharedVars[name] = world.reflectedColor(comps, limit)
+        }
+
+        When("{variable} ← refracted_color\\({world}, {comps}, {int})") { name: String, world: World, comps: PartialResults, limit: Int ->
+            SharedVars[name] = world.refractedColor(comps, limit)
         }
 
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->

@@ -13,6 +13,8 @@ import uk.co.kievits.raytracer.shape.Intersections
 import uk.co.kievits.raytracer.shape.PartialResults
 import uk.co.kievits.raytracer.shape.Shape
 import uk.co.kievits.raytracer.shape.Sphere
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 data class World(
     val shapes: MutableList<Shape> = mutableListOf(),
@@ -42,7 +44,7 @@ data class World(
         comps: PartialResults,
         remaining: Int = Int.MAX_VALUE,
     ): COLOR {
-        val initial = reflectedColor(comps, remaining)
+        val initial = reflectedColor(comps, remaining) + refractedColor(comps, remaining)
         return lights.fold(initial) { acc, light ->
             acc + lighting(comps, light)
         }
@@ -70,6 +72,26 @@ data class World(
 
         val reflectRay = Ray(comps.overPoint, comps.reflectV)
         return colorAt(reflectRay, remaining - 1) * reflective
+    }
+
+    fun refractedColor(
+        comps: PartialResults,
+        remaining: Int = Int.MAX_VALUE,
+    ): COLOR {
+        val transparency = comps.shape.material.transparency
+        if (transparency == 0f || remaining <= 0) return BLACK
+
+        val nRatio = comps.n1 / comps.n2
+        val cosI = comps.eyeV dot comps.normalV
+        val sin2t = nRatio.pow(2) * (1 - cosI.pow(2))
+
+        if (sin2t > 1f) return BLACK
+
+        val cosT = sqrt(1f - sin2t)
+        val direction = comps.normalV * (nRatio * cosI - cosT) - comps.eyeV * nRatio
+        val refractedRay = Ray(comps.underPoint, direction)
+
+        return colorAt(refractedRay, remaining - 1) * transparency
     }
 
     fun colorAt(
