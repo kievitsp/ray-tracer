@@ -17,6 +17,8 @@ data class Material(
     var specular: V = defaultSpecular,
     var shininess: V = defaultShininess,
     var reflective: V = defaultReflective,
+    var transparency: V = defaultTransparency,
+    var refractiveIndex: V = defaultRefractiveIndex,
 ) {
     constructor(
         color: COLOR = defaultColor,
@@ -24,12 +26,16 @@ data class Material(
         diffuse: V = defaultDiffuse,
         specular: V = defaultSpecular,
         shininess: V = defaultShininess,
+        transparency: V = defaultTransparency,
+        refractiveIndex: V = defaultRefractiveIndex,
     ) : this(
         pattern = SolidPattern(color),
         ambient = ambient,
         diffuse = diffuse,
         specular = specular,
         shininess = shininess,
+        transparency = transparency,
+        refractiveIndex = refractiveIndex,
     )
 
     var color: COLOR
@@ -98,5 +104,7 @@ data class Material(
         private const val defaultSpecular: V = 0.9f
         private const val defaultShininess: V = 200f
         private const val defaultReflective: V = 0f
+        private const val defaultTransparency: V = 0f
+        private const val defaultRefractiveIndex: V = 1f
     }
 }

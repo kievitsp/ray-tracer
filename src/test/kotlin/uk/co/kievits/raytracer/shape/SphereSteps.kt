@@ -23,12 +23,13 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([sp]\\w*|inner|outer|object)|(sphere|test_shape|plane)\\(\\)"
+            "([sp]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)
                 else -> when (new) {
                     "sphere" -> Sphere()
+                    "glass_sphere" -> Sphere.Glass()
                     "plane" -> Plane()
                     "test_shape" -> TestShape()
                     else -> TODO(new.toString())
@@ -59,6 +60,7 @@ class SphereSteps : En {
                             val result = matcher.matchEntire(value) ?: throw IllegalStateException(value)
                             transform = buildMatrix(null, result.groupValues[1], result.groupValues[2]) as Matrix<D4>
                         }
+
                         else -> TODO(row[0])
                     }
                 }
@@ -111,6 +113,10 @@ class SphereSteps : En {
 
         Then("{shape}.saved_ray.direction = {tuple}") { shape: TestShape, exp: TUPLE ->
             assert(shape.savedRay.direction == exp)
+        }
+
+        Then("{shape}.material.{variable} = {float}") { shape: Shape, variable: String, exp: Float ->
+            assertMaterial(shape.material, variable, exp)
         }
     }
 }

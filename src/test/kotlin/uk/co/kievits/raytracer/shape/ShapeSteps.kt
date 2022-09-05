@@ -111,9 +111,18 @@ class ShapeSteps : En {
 
         Given("{variable} ← {material}") { name: String, material: Material -> SharedVars[name] = material }
 
-        Given("{material}.ambient ← {float}") { material: Material, ambient: Float -> material.ambient = ambient }
-        Given("{material}.diffuse ← {float}") { material: Material, diffuse: Float -> material.diffuse = diffuse }
-        Given("{material}.specular ← {float}") { material: Material, specular: Float -> material.specular = specular }
+        Given("{material}.{variable} ← {float}") { material: Material, variable: String, value: Float ->
+            when (variable) {
+                "ambient" -> material.ambient = value
+                "diffuse" -> material.diffuse = value
+                "specular" -> material.specular = value
+                "shininess" -> material.shininess = value
+                "reflective" -> material.reflective = value
+                "transparency" -> material.transparency = value
+                "refractive_index" -> material.refractiveIndex = value
+                else -> TODO(variable)
+            }
+        }
 
         Given("{material}.pattern ← stripe_pattern\\({tuple}, {tuple})") { material: Material, a: COLOR, b: COLOR ->
             material.pattern = StripedPattern(a, b)
@@ -263,11 +272,10 @@ class ShapeSteps : En {
         }
 
         Then("{material}.color = {tuple}") { material: Material, color: COLOR -> assert(material.color == color) }
-        Then("{material}.ambient = {float}") { material: Material, ambient: Float -> assert(material.ambient == ambient) }
-        Then("{material}.diffuse = {float}") { material: Material, diffuse: Float -> assert(material.diffuse == diffuse) }
-        Then("{material}.specular = {float}") { material: Material, specular: Float -> assert(material.specular == specular) }
-        Then("{material}.shininess = {float}") { material: Material, shininess: Float -> assert(material.shininess == shininess) }
-        Then("{material}.reflective = {float}") { material: Material, reflective: Float -> assert(material.reflective == reflective) }
+
+        Then("{material}.{variable} = {float}") { material: Material, variable: String, exp: Float ->
+            assertMaterial(material, variable, exp)
+        }
 
         Then("{material} = {material}") { actual: Material, exp: Material ->
             assert(actual == exp)
@@ -325,5 +333,18 @@ class ShapeSteps : En {
         Then("color_at\\({world}, {ray}) should terminate successfully") { world: World, ray: Ray ->
             world.colorAt(ray)
         }
+    }
+}
+
+fun assertMaterial(material: Material, variable: String, exp: Float) {
+    when (variable) {
+        "ambient" -> assert(material.ambient == exp)
+        "diffuse" -> assert(material.diffuse == exp)
+        "specular" -> assert(material.specular == exp)
+        "shininess" -> assert(material.shininess == exp)
+        "reflective" -> assert(material.reflective == exp)
+        "transparency" -> assert(material.transparency == exp)
+        "refractive_index" -> assert(material.refractiveIndex == exp)
+        else -> TODO(variable)
     }
 }

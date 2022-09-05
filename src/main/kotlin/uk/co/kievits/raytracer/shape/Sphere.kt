@@ -48,4 +48,11 @@ class Sphere(
     override fun toString(): String {
         return "Sphere(material=$material, transform=$transform)"
     }
+
+    companion object {
+        fun Glass(): Sphere = Sphere().apply {
+            material.transparency = 1f
+            material.refractiveIndex = 1.5f
+        }
+    }
 }
