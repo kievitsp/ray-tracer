@@ -127,8 +127,8 @@ class ShapeSteps : En {
             SharedVars[name] = w.shapes.first { it != w.shapes.first() }
         }
 
-        Given("{shape} is added to {world}") { shape: Shape, world: World ->
-            world.shapes.add(shape)
+        Given("{variable} is added to {world}") { name: String, world: World ->
+            world.shapes.add(SharedVars[name])
         }
 
         Given("{variable} ← stripe_pattern\\({tuple}, {tuple})") { name: String, first: TUPLE, second: TUPLE ->
@@ -230,6 +230,10 @@ class ShapeSteps : En {
             SharedVars[name] = world.reflectedColor(comps)
         }
 
+        When("{variable} ← reflected_color\\({world}, {comps}, {int})") { name: String, world: World, comps: PartialResults, limit: Int ->
+            SharedVars[name] = world.reflectedColor(comps, limit)
+        }
+
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
             assert(ray.origin == exp)
         }
@@ -316,6 +320,10 @@ class ShapeSteps : En {
 
         Then("pattern_at\\({pattern}, {tuple}) = {tuple}") { pattern: Pattern, point: POINT, color: COLOR ->
             assert(pattern.atPattern(point) == color)
+        }
+
+        Then("color_at\\({world}, {ray}) should terminate successfully") { world: World, ray: Ray ->
+            world.colorAt(ray)
         }
     }
 }

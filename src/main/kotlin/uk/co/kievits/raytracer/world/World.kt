@@ -39,8 +39,14 @@ data class World(
         isSorted = true
     )
 
-    fun shadeHit(comps: PartialResults): COLOR = lights.fold(Colors.BLACK) { acc, light ->
-        acc + lighting(comps, light)
+    fun shadeHit(
+        comps: PartialResults,
+        remaining: Int = Int.MAX_VALUE,
+    ): COLOR {
+        val initial = reflectedColor(comps, remaining)
+        return lights.fold(initial) { acc, light ->
+            acc + lighting(comps, light)
+        }
     }
 
     private fun lighting(
@@ -55,23 +61,28 @@ data class World(
         shape = comps.shape,
     )
 
-    fun reflectedColor(comps: PartialResults): COLOR {
+    fun reflectedColor(
+        comps: PartialResults,
+        remaining: Int = Int.MAX_VALUE,
+    ): COLOR {
+        if (remaining <= 0) return BLACK
         val reflective = comps.shape.material.reflective
         if (reflective < EPSILON) return BLACK
 
         val reflectRay = Ray(comps.overPoint, comps.reflectV)
-        val color = colorAt(reflectRay)
-
-        return color * reflective
+        return colorAt(reflectRay, remaining - 1) * reflective
     }
 
-    fun colorAt(ray: Ray): COLOR {
+    fun colorAt(
+        ray: Ray,
+        remaining: Int = 10,
+    ): COLOR {
         val intersection = intersections(ray)
             .hit() ?: return Colors.BLACK
 
         val precompute = intersection.precompute(ray)
 
-        return shadeHit(precompute)
+        return shadeHit(precompute, remaining)
     }
 
     fun isShadowed(

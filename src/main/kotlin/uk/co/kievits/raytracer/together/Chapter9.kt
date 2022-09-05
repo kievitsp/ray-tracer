@@ -37,6 +37,7 @@ fun main() {
                 }
                 ) / 2
             specular = 0f
+            reflective = .1f
         }
     }
 
@@ -61,6 +62,7 @@ fun main() {
             }.perturbed(.75)
             diffuse = 0.7f
             specular = 0.3f
+            reflective = .05f
         }
     }
 
@@ -70,6 +72,7 @@ fun main() {
             color = Color(0.5, 1, .1)
             diffuse = 0.7f
             specular = 0.3f
+            reflective = .05f
         }
     }
 
@@ -79,6 +82,7 @@ fun main() {
             color = Color(1, 0.8, 0.1)
             diffuse = 0.7f
             specular = 0.3f
+            reflective = .05f
         }
     }
 
