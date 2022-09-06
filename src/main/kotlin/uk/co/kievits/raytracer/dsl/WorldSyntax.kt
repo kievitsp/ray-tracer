@@ -9,6 +9,7 @@ import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
+import uk.co.kievits.raytracer.shape.Cube
 import uk.co.kievits.raytracer.shape.Plane
 import uk.co.kievits.raytracer.shape.Shape
 import uk.co.kievits.raytracer.shape.Sphere
@@ -34,31 +35,29 @@ class WorldSyntax(
     }
 
     inline fun sphere(
-        init: Syntax<SphereSyntax> = {}
+        init: Syntax<ShapeSyntax> = {}
     ): Sphere = Sphere().apply {
-        SphereSyntax(this).init()
+        ShapeSyntax(this).init()
         world.shapes.add(this)
     }
 
     inline fun plane(
-        init: Syntax<PlaneSyntax> = {}
+        init: Syntax<ShapeSyntax> = {}
     ): Plane = Plane().apply {
-        PlaneSyntax(this).init()
+        ShapeSyntax(this).init()
+        world.shapes.add(this)
+    }
+    inline fun cube(
+        init: Syntax<ShapeSyntax> = {}
+    ): Cube = Cube().apply {
+        ShapeSyntax(this).init()
         world.shapes.add(this)
     }
 }
 
-class SphereSyntax(
-    override val shape: Sphere = Sphere()
-) : ShapeSyntax<Sphere>()
-
-class PlaneSyntax(
-    override val shape: Plane = Plane()
-) : ShapeSyntax<Plane>()
-
-abstract class ShapeSyntax<S : Shape> {
-    protected abstract val shape: S
-
+class ShapeSyntax(
+    private val shape: Shape
+) {
     val glass: Material
         get() = Material(
             color = BLACK,

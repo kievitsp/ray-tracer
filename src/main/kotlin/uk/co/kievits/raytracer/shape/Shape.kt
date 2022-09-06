@@ -1,6 +1,7 @@
 package uk.co.kievits.raytracer.shape
 
 import uk.co.kievits.raytracer.base.D4
+import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
@@ -25,8 +26,8 @@ abstract class WorldAware(
 }
 
 abstract class Shape(
-    transform: Matrix<D4>,
-    var material: Material,
+    transform: Matrix<D4> = IdentityMatrix(),
+    var material: Material = Material(),
 ) : WorldAware(transform) {
 
     fun normalAt(

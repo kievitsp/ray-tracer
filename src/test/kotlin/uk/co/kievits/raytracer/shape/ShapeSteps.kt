@@ -28,7 +28,7 @@ class ShapeSteps : En {
             "tuple",
             "(tuple|vector|point|color)\\(${numberPattern}\\)|" +
                 "(zero|norm|origin|direction|n|position|intensity|point|eyev|normalv|" +
-                "result|c\\d?|p|n\\d|black|white|color)",
+                "result|c\\d?|p|n\\d|black|white|color|normal)",
         ) { type: String?, args: String?, name: String? ->
             SharedVars.buildTuple(args, type, name)
         }

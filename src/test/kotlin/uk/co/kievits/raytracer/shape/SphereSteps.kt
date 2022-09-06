@@ -25,7 +25,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([spAB]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere)\\(\\)"
+            "([scpAB]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere|cube)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)
@@ -34,6 +34,7 @@ class SphereSteps : En {
                     "glass_sphere" -> Sphere.Glass()
                     "plane" -> Plane()
                     "test_shape" -> TestShape()
+                    "cube" -> Cube()
                     else -> TODO(new.toString())
                 }
             }

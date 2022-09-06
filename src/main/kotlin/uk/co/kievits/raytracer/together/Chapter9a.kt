@@ -1,22 +1,18 @@
 package uk.co.kievits.raytracer.together
 
 import kotlinx.coroutines.runBlocking
-import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.Colors.RED
 import uk.co.kievits.raytracer.base.Colors.WHITE
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Vector
 import uk.co.kievits.raytracer.base.rotationX
-import uk.co.kievits.raytracer.base.rotationY
-import uk.co.kievits.raytracer.base.rotationZ
 import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
 import uk.co.kievits.raytracer.canvas.ImageType
 import uk.co.kievits.raytracer.dsl.world
 import uk.co.kievits.raytracer.material.CheckeredPattern
-import uk.co.kievits.raytracer.material.StripedPattern
 import uk.co.kievits.raytracer.world.Camera
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -55,6 +51,10 @@ fun main() {
             }
         }
 
+        cube {
+            transform = translation(x = -2, y = 2) * scaling(.5)
+            material = mirror
+        }
     }
 
     val camera = Camera(
