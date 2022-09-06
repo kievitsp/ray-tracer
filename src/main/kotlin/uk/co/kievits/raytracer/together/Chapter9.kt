@@ -13,12 +13,10 @@ import uk.co.kievits.raytracer.base.scaling
 import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
 import uk.co.kievits.raytracer.canvas.ImageType
-import uk.co.kievits.raytracer.light.PointLight
+import uk.co.kievits.raytracer.dsl.world
+import uk.co.kievits.raytracer.material.CheckeredPattern
 import uk.co.kievits.raytracer.material.StripedPattern
-import uk.co.kievits.raytracer.shape.Plane
-import uk.co.kievits.raytracer.shape.Sphere
 import uk.co.kievits.raytracer.world.Camera
-import uk.co.kievits.raytracer.world.World
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.math.PI
@@ -28,77 +26,66 @@ import kotlin.time.measureTimedValue
 
 @OptIn(ExperimentalTime::class)
 fun main() {
-    val floor = Plane().apply {
-        material.apply {
-            pattern =
-                (
-                StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE).apply {
-                    transform = rotationZ(PI / 4)
+    val world = world {
+        val floor = plane {
+            material {
+                val newPattern = (StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE))
+                pattern = (
+                    StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE).apply {
+                        transform = rotationZ(PI / 4)
+                    }
+                    ) / 2
+                specular = 0f
+            }
+        }
+
+        plane {
+            transform = translation(0, 0, 5) *
+                rotationY(-PI / 4) * rotationX(PI / 2)
+            material = floor.material
+        }
+
+        plane {
+            transform = translation(0, 0, 5) *
+                rotationY(PI / 4) * rotationX(PI / 2)
+            material = floor.material
+        }
+
+        sphere {
+            transform = translation(-0.5, 1, 0.5)
+            material {
+                pattern = StripedPattern(Color(0.1, 1, .5), Color(0.1, 0, .5)).apply {
+                    transform = rotationY(PI / 3) * rotationZ(PI / 5) *
+                        scaling(0.1, 0.1, 0.1)
+                }.perturbed()
+                diffuse = 0.7f
+                specular = 0.3f
+            }
+        }
+
+        sphere {
+            transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
+            material {
+                pattern = CheckeredPattern(
+                    Color(0.5, 1, .1),
+                    Color(0.5, 0, .9),
+                ).apply {
+                    transform = scaling(.1, .1, .1)
                 }
-                ) / 2
-            specular = 0f
-            reflective = .1f
+                diffuse = 0.7f
+                specular = 0.3f
+            }
+        }
+
+        sphere {
+            transform = translation(-1.5, 0.33, -.75) * scaling(.33, .33, .33)
+            material {
+                color = Color(1, 0.8, 0.1)
+                diffuse = 0.7f
+                specular = 0.3f
+            }
         }
     }
-
-    val leftWall = Plane().apply {
-        transform = translation(0, 0, 5) *
-            rotationY(-PI / 4) * rotationX(PI / 2)
-        material = floor.material
-    }
-
-    val rightWall = Plane().apply {
-        transform = translation(0, 0, 5) *
-            rotationY(PI / 4) * rotationX(PI / 2)
-        material = floor.material
-    }
-
-    val middle = Sphere().apply {
-        transform = translation(-0.5, 1, 0.5)
-        material.apply {
-            pattern = StripedPattern(Color(0.1, 1, .5), Color(0.1, 0, .5)).apply {
-                transform = rotationY(PI / 3) * rotationZ(PI / 5) *
-                    scaling(0.1, 0.1, 0.1)
-            }.perturbed(.75)
-            diffuse = 0.7f
-            specular = 0.3f
-            reflective = .05f
-        }
-    }
-
-    val right = Sphere.Glass().apply {
-        transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
-//        material.apply {
-//            color = Color(0.5, 1, .1)
-//            diffuse = 0.7f
-//            specular = 0.3f
-//            reflective = .05f
-//        }
-    }
-
-    val left = Sphere().apply {
-        transform = translation(-1.5, 0.33, -.75) * scaling(.33, .33, .33)
-        material.apply {
-            color = Color(1, 0.8, 0.1)
-            diffuse = 0.7f
-            specular = 0.3f
-            reflective = .05f
-        }
-    }
-
-    val world = World(
-        shapes = mutableListOf(
-            floor,
-            leftWall,
-            rightWall,
-            middle,
-            right,
-            left,
-        ),
-        lights = mutableListOf(
-            PointLight(Point(-10, 10, -10), Color(1, 1, 1)),
-        )
-    )
 
     val camera = Camera(
         hSize = 800,
@@ -113,7 +100,7 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-        runBlocking { camera.renderAsync(world, ImageType.PNG) }
+        runBlocking { camera.render(world, ImageType.PNG) }
     }
 
     println("async time $aSyncTime")
