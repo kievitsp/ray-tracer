@@ -26,6 +26,7 @@ data class Material(
         diffuse: V = defaultDiffuse,
         specular: V = defaultSpecular,
         shininess: V = defaultShininess,
+        reflective: V = defaultReflective,
         transparency: V = defaultTransparency,
         refractiveIndex: V = defaultRefractiveIndex,
     ) : this(
@@ -34,6 +35,7 @@ data class Material(
         diffuse = diffuse,
         specular = specular,
         shininess = shininess,
+        reflective = reflective,
         transparency = transparency,
         refractiveIndex = refractiveIndex,
     )

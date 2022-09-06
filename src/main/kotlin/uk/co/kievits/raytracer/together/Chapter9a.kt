@@ -3,6 +3,7 @@ package uk.co.kievits.raytracer.together
 import kotlinx.coroutines.runBlocking
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors.BLACK
+import uk.co.kievits.raytracer.base.Colors.RED
 import uk.co.kievits.raytracer.base.Colors.WHITE
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Vector
@@ -14,6 +15,7 @@ import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
 import uk.co.kievits.raytracer.canvas.ImageType
 import uk.co.kievits.raytracer.dsl.world
+import uk.co.kievits.raytracer.material.CheckeredPattern
 import uk.co.kievits.raytracer.material.StripedPattern
 import uk.co.kievits.raytracer.world.Camera
 import java.nio.file.Files
@@ -26,63 +28,33 @@ import kotlin.time.measureTimedValue
 @OptIn(ExperimentalTime::class)
 fun main() {
     val world = world {
-        val floor = plane {
-            material {
-                val newPattern = (StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE))
-                pattern = (
-                    StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE).apply {
-                        transform = rotationZ(PI / 4)
-                    }
-                    ) / 2
-                specular = 0f
-                reflective = 0.05
-            }
-        }
-
         plane {
-            transform = translation(0, 0, 5) *
-                rotationY(-PI / 4) * rotationX(PI / 2)
-            material = floor.material
-        }
-
-        plane {
-            transform = translation(0, 0, 5) *
-                rotationY(PI / 4) * rotationX(PI / 2)
-            material = floor.material
-        }
-
-        sphere {
-            transform = translation(-0.5, 1, 0.5)
+            transform = translation(z = 5) * rotationX(PI / 2)
             material {
-                pattern = StripedPattern(Color(0.1, 1, .5), Color(0.1, 0, .5)).apply {
-                    transform = rotationY(PI / 3) * rotationZ(PI / 5) *
-                        scaling(0.1, 0.1, 0.1)
-                }.perturbed()
-                diffuse = 0.7f
-                specular = 0.3f
-                reflective = .1
+                pattern = CheckeredPattern(WHITE, BLACK).apply {
+                    transform = scaling(0.1, 0.1, .1)
+                }
+                reflective = .05
             }
         }
 
         sphere {
-            transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
-            material {
-                color = BLACK
-                diffuse = 0.7f
-                specular = 0.3f
-                reflective = 1
-            }
-        }
-
-        sphere {
-            transform = translation(-1.5, 0.33, -.75) * scaling(.33, .33, .33)
+            transform = translation(x = -0, y = 1) * scaling(1.5)
             material = glass
         }
 
-//        plane {
-//            material = glass
-//            transform = translation(0, .5, 0)
-//        }
+        sphere {
+            transform = translation(x = 2, y = 2) * scaling(.5)
+            material = mirror
+        }
+
+        sphere {
+            transform = translation(x = 2, y = 2, z = 5) * scaling(.5)
+            material {
+                color = RED
+            }
+        }
+
     }
 
     val camera = Camera(
@@ -103,7 +75,7 @@ fun main() {
 
     println("async time $aSyncTime")
 
-    val path = Paths.get("./chapter9.png")
+    val path = Paths.get("./chapter9a.png")
 
     Files.newOutputStream(path).use {
         image.write(it)

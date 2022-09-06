@@ -259,6 +259,10 @@ class ShapeSteps : En {
             SharedVars[name] = world.refractedColor(comps, limit)
         }
 
+        When("{variable} ← schlick\\({comps}\\)") { name: String, comps: PartialResults ->
+            SharedVars[name] = comps.schlick()
+        }
+
         Then("{ray}.origin = {tuple}") { ray: Ray, exp: TUPLE ->
             assert(ray.origin == exp)
         }

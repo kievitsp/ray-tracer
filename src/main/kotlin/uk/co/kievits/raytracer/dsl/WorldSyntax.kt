@@ -2,16 +2,16 @@ package uk.co.kievits.raytracer.dsl
 
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Color
+import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.Point
-import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
-import uk.co.kievits.raytracer.shape.Sphere
 import uk.co.kievits.raytracer.shape.Plane
 import uk.co.kievits.raytracer.shape.Shape
+import uk.co.kievits.raytracer.shape.Sphere
 import uk.co.kievits.raytracer.world.World
 
 typealias Syntax<T> = T.() -> Unit
@@ -50,18 +50,33 @@ class WorldSyntax(
 
 class SphereSyntax(
     override val shape: Sphere = Sphere()
-) : ShapeSyntax<Sphere>() {
-
-}
+) : ShapeSyntax<Sphere>()
 
 class PlaneSyntax(
     override val shape: Plane = Plane()
-) : ShapeSyntax<Plane>() {
-
-}
+) : ShapeSyntax<Plane>()
 
 abstract class ShapeSyntax<S : Shape> {
-    abstract protected val shape: S
+    protected abstract val shape: S
+
+    val glass: Material
+        get() = Material(
+            color = BLACK,
+            transparency = 1.0f,
+            refractiveIndex = 1.5f,
+            reflective = 1.0f,
+            diffuse = .01f,
+            ambient = .01f,
+            specular = 1.0f,
+            shininess = 300.0f,
+//            shadeRatio = .1f
+        )
+    val mirror: Material
+        get() = Material(
+            color = BLACK,
+            reflective = 1.0f,
+        )
+
     var material: Material
         get() = shape.material
         set(value) {
@@ -98,33 +113,44 @@ value class MaterialSyntax(
             material.pattern = value
         }
 
-    var ambient: V
+    var ambient: Number
         get() = material.ambient
         set(value) {
-            material.ambient = value
+            material.ambient = value.toFloat()
         }
 
-    var diffuse: V
+    var diffuse: Number
         get() = material.diffuse
         set(value) {
-            material.diffuse = value
+            material.diffuse = value.toFloat()
         }
 
-    var specular: V
+    var specular: Number
         get() = material.specular
         set(value) {
-            material.specular = value
+            material.specular = value.toFloat()
         }
 
-    var shininess: V
+    var shininess: Number
         get() = material.shininess
         set(value) {
-            material.shininess = value
+            material.shininess = value.toFloat()
         }
 
-    var reflective: V
+    var reflective: Number
         get() = material.reflective
         set(value) {
-            material.reflective = value
+            material.reflective = value.toFloat()
+        }
+
+    var transparency: Number
+        get() = material.transparency
+        set(value) {
+            material.transparency = value.toFloat()
+        }
+    var refractiveIndex: Number
+        get() = material.refractiveIndex
+        set(value) {
+            material.refractiveIndex = value.toFloat()
         }
 }

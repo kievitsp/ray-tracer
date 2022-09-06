@@ -5,6 +5,7 @@ import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.TUPLE
+import uk.co.kievits.raytracer.base.approx
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
 import uk.co.kievits.raytracer.cucumber.SharedVars.parseFloat
 import uk.co.kievits.raytracer.cucumber.SharedVars.variablePattern
@@ -71,6 +72,10 @@ class SharedSteps : En {
 
         Then("{tuple} = {tuple}") { actual: TUPLE, exp: TUPLE ->
             assert(actual approx exp)
+        }
+
+        Then("{variable} = {number}") { name: String, exp: Float ->
+            assert(SharedVars.get<Float>(name) approx exp)
         }
 
         Given("{variable} ← {matrix} * {matrix}") { name: String, m1: Matrix<D4>, m2: Matrix<D4> ->

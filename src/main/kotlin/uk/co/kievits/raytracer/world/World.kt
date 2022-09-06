@@ -44,10 +44,15 @@ data class World(
         comps: PartialResults,
         remaining: Int = Int.MAX_VALUE,
     ): COLOR {
-        val initial = reflectedColor(comps, remaining) + refractedColor(comps, remaining)
-        return lights.fold(initial) { acc, light ->
-            acc + lighting(comps, light)
+        val reflected = reflectedColor(comps, remaining)
+        val refracted = refractedColor(comps, remaining)
+        val initial = if (comps.shape.material.reflective > 0 && comps.shape.material.transparency > 0) {
+            val reflectance = comps.schlick()
+            (reflected * reflectance) + (refracted * (1 - reflectance))
+        } else {
+            reflected + refracted
         }
+        return lights.fold(initial) { acc, light -> acc + lighting(comps, light) }
     }
 
     private fun lighting(
