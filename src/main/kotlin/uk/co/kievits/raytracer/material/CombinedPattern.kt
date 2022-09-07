@@ -8,8 +8,8 @@ class CombinedPattern(
     private val second: Pattern,
 ) : Pattern() {
     override fun atPattern(shapePoint: POINT): COLOR {
-        val first = first.atPattern(first.inverseTransform * shapePoint)
-        val second = second.atPattern(second.inverseTransform * shapePoint)
+        val first = first.atPattern(first.transform.inverse * shapePoint)
+        val second = second.atPattern(second.transform.inverse * shapePoint)
 
         return first + second
     }

@@ -16,7 +16,7 @@ abstract class Pattern(
 
     abstract fun atPattern(shapePoint: POINT): COLOR
 
-    open fun atShape(shape: Shape, point: POINT): COLOR = atPattern(shape.inverseTranspose * point)
+    open fun atShape(shape: Shape, point: POINT): COLOR = atPattern(shape.transform.inverse.transpose * point)
 
     fun perturbed(ratio: Number = 1f) = PerturbedPattern(this, ratio.toFloat())
 

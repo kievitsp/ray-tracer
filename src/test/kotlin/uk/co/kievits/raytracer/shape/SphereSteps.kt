@@ -8,6 +8,7 @@ import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.TUPLE
+import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.approx
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.buildMatrix
@@ -25,7 +26,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([scpAB]\\w*|inner|outer|object)|(sphere|test_shape|plane|glass_sphere|cube)\\(\\)"
+            "([scpAB]\\w*|inner|outer|object|cyl)|(sphere|test_shape|plane|glass_sphere|cube|cylinder)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)
@@ -35,16 +36,21 @@ class SphereSteps : En {
                     "plane" -> Plane()
                     "test_shape" -> TestShape()
                     "cube" -> Cube()
+                    "cylinder" -> Cylinder()
                     else -> TODO(new.toString())
                 }
             }
         }
-        ParameterType("pattern", "pattern|test_pattern\\(\\)") { name ->
-            getPattern(name)
-        }
+        ParameterType("pattern", "pattern|test_pattern\\(\\)") { name -> getPattern(name) }
 
-        Given("{variable} ← {shape}") { name: String, shape: Shape ->
-            SharedVars[name] = shape
+        Given("{variable} ← {shape}") { name: String, shape: Shape -> SharedVars[name] = shape }
+
+        Given("{shape}.maximum ← {number}") { shape: Cylinder, value: V -> shape.maximum = value }
+        Given("{shape}.minimum ← {number}") { shape: Cylinder, value: V -> shape.minimum = value }
+        Given("{shape}.closed ← {boolean}") { shape: Cylinder, value: Boolean -> shape.closed = value }
+
+        Given("{variable} ← normalize\\({tuple})") { name: String, tuple: TUPLE ->
+            SharedVars[name] = tuple.normalise
         }
 
         Given("{} ← {shape} with:") { name: String, shape: Shape, data: DataTable ->
@@ -96,15 +102,25 @@ class SphereSteps : En {
         }
 
         Then("{shape}.saved_ray.origin = {tuple}") { shape: TestShape, exp: TUPLE ->
-            assert(shape.savedRay.origin == exp)
+            assert(shape.savedRay?.origin == exp)
         }
 
         Then("{shape}.saved_ray.direction = {tuple}") { shape: TestShape, exp: TUPLE ->
-            assert(shape.savedRay.direction == exp)
+            assert(shape.savedRay?.direction == exp)
         }
 
         Then("{shape}.material.{variable} = {float}") { shape: Shape, variable: String, exp: Float ->
             assertMaterial(shape.material, variable, exp)
+        }
+
+        Then("{shape}.minimum = {number}") { shape: Cylinder, exp: Float ->
+            assert(shape.minimum == exp)
+        }
+        Then("{shape}.maximum = {number}") { shape: Cylinder, exp: Float ->
+            assert(shape.maximum == exp)
+        }
+        Then("{shape}.closed = {boolean}") { shape: Cylinder, exp: Boolean ->
+            assert(shape.closed == exp)
         }
     }
 

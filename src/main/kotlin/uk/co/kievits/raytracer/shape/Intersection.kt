@@ -22,6 +22,7 @@ data class Intersection(
         val reflectV = ray.direction.reflect(realNormalV)
 
         val containers = mutableListOf<Shape>()
+
         var n1: Float = -1f
         var n2: Float = -1f
 

@@ -1,6 +1,5 @@
 package uk.co.kievits.raytracer.together
 
-import kotlinx.coroutines.runBlocking
 import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.Colors.WHITE
@@ -28,11 +27,9 @@ fun main() {
     val world = world {
         val floor = plane {
             material {
-                val newPattern = (StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE))
                 pattern = (
-                    StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE).apply {
-                        transform = rotationZ(PI / 4)
-                    }
+                    StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE)
+                        .apply { transform = rotationZ(PI / 4) }
                     ) / 2
                 specular = 0f
                 reflective = 0.05
@@ -98,7 +95,8 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-        runBlocking { camera.renderAsync(world, ImageType.PNG) }
+        camera.render(world, ImageType.PNG)
+//        runBlocking { camera.renderAsync(world, ImageType.PNG) }
     }
 
     println("async time $aSyncTime")

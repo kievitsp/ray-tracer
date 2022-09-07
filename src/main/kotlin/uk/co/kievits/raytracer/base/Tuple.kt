@@ -6,6 +6,8 @@ import jdk.incubator.vector.VectorShuffle
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+// @JvmInline
+// value
 class Tuple(
     val vector: FloatVector,
 ) {

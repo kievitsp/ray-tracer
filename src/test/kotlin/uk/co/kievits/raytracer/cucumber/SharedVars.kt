@@ -7,6 +7,7 @@ import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Point
 import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.Vector
 import uk.co.kievits.raytracer.base.rotationX
 import uk.co.kievits.raytracer.base.rotationY
@@ -20,7 +21,7 @@ import kotlin.math.sqrt
 
 object SharedVars {
     private val numberSplitter = ", ?".toRegex()
-    const val numberPattern = "((?:EPSILON|[-0-9, .√π/])+)"
+    const val numberPattern = "((?:EPSILON|infinity|[-0-9, .√π/])+)"
     const val variablePattern = "[a-zA-Z]\\w*"
 
     @PublishedApi
@@ -59,6 +60,7 @@ object SharedVars {
         string.startsWith("-") -> -parseFloat(string.substring(1))
         string == "π" -> PI.toFloat()
         string == "EPSILON" -> EPSILON
+        string == "infinity" -> V.POSITIVE_INFINITY
         else -> string.toFloat()
     }
 

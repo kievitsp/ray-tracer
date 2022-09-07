@@ -26,16 +26,14 @@ class Camera(
     val fieldOfView: V,
     transform: Matrix<D4> = IdentityMatrix(),
 ) {
-    private var inverseTransform = transform.inverse()
-    private var origin = inverseTransform * Point(0f, 0f, 0f)
-
     var transform: Matrix<D4> = transform
         set(value) {
             if (value == field) return
             field = value
-            inverseTransform = value.inverse()
-            origin = inverseTransform * Point(0f, 0f, 0f)
+            origin = transform.inverse * Point(0f, 0f, 0f)
         }
+
+    private var origin = this.transform.inverse * Point(0f, 0f, 0f)
 
     val pixelSize: V
     val halfWidth: Float
@@ -67,7 +65,7 @@ class Camera(
         val worldX: V = halfWidth - xOffset
         val worldY: V = halfHeight - yOffset
 
-        val pixel = inverseTransform * Point(worldX, worldY, -1f)
+        val pixel = transform.inverse * Point(worldX, worldY, -1f)
 //        val origin = inverseTransform * Point(0f, 0f, 0f)
 
         val direction = (pixel - origin).normalise

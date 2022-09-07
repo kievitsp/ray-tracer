@@ -12,8 +12,8 @@ class TestShape(
     transform: Matrix<D4> = IdentityMatrix(),
     material: Material = Material(),
 ) : Shape(transform, material) {
-    lateinit var savedPoint: POINT
-    lateinit var savedRay: Ray
+    var savedPoint: POINT? = null
+    var savedRay: Ray? = null
 
     override fun localNormalAt(p: POINT): Tuple {
         savedPoint = p

@@ -10,6 +10,7 @@ import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
 import uk.co.kievits.raytracer.shape.Cube
+import uk.co.kievits.raytracer.shape.Cylinder
 import uk.co.kievits.raytracer.shape.Plane
 import uk.co.kievits.raytracer.shape.Shape
 import uk.co.kievits.raytracer.shape.Sphere
@@ -47,16 +48,45 @@ class WorldSyntax(
         ShapeSyntax(this).init()
         world.shapes.add(this)
     }
+
     inline fun cube(
         init: Syntax<ShapeSyntax> = {}
     ): Cube = Cube().apply {
         ShapeSyntax(this).init()
         world.shapes.add(this)
     }
+
+    inline fun cylinder(
+        init: Syntax<CylinderSyntax> = {}
+    ): Cylinder = Cylinder().apply {
+        CylinderSyntax(this).init()
+        world.shapes.add(this)
+    }
 }
 
-class ShapeSyntax(
-    private val shape: Shape
+open class CylinderSyntax(
+    override val shape: Cylinder,
+) : ShapeSyntax(shape) {
+
+    var closed
+        get() = shape.closed
+        set(value) {
+            shape.closed = value
+        }
+    var minimum: Number
+        get() = shape.minimum
+        set(value) {
+            shape.minimum = value.toFloat()
+        }
+    var maximum: Number
+        get() = shape.maximum
+        set(value) {
+            shape.maximum = value.toFloat()
+        }
+}
+
+open class ShapeSyntax(
+    protected open val shape: Shape
 ) {
     val glass: Material
         get() = Material(

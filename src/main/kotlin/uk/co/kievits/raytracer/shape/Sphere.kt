@@ -19,7 +19,8 @@ class Sphere(
     override fun localNormalAt(p: POINT) = (p - Point(0, 0, 0)).normalise
 
     override fun localIntersections(ray: Ray): Intersections {
-        val sphereToRay = ray.origin - PointZero()
+
+        val sphereToRay = ray.origin - pointZero
         val a = ray.direction dot ray.direction
         val b = 2 * (ray.direction dot sphereToRay)
         val c = (sphereToRay dot sphereToRay) - 1
@@ -54,5 +55,7 @@ class Sphere(
             material.transparency = 1f
             material.refractiveIndex = 1.5f
         }
+
+        private val pointZero = PointZero()
     }
 }

@@ -60,8 +60,8 @@ class StepDefs : En {
         Given("the following 3x3 matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
 
         Given("the following matrix {}:") { name: String, m: MATRIX -> vars[name] = m }
-        Given("{} ← transpose\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.transpose() }
-        Given("{} ← inverse\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.inverse() }
+        Given("{} ← transpose\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.transpose }
+        Given("{} ← inverse\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.inverse }
 
         Then("{tuple}.x = {float}") { tuple: TUPLE, value: Float -> assert(tuple.x == value) }
         Then("{tuple}.y = {float}") { tuple: TUPLE, value: Float -> assert(tuple.y == value) }
@@ -154,7 +154,7 @@ class StepDefs : En {
         }
 
         Then("transpose\\({matrix}) is the following matrix:") { a: MATRIX, b: MATRIX ->
-            assert(a.transpose() == b)
+            assert(a.transpose == b)
         }
 
         Then("determinant\\({matrix}) = {float}") { a: MATRIX, value: Float ->
@@ -169,7 +169,7 @@ class StepDefs : En {
             assert(m.subMatrix(x, y) == exp)
         }
         Then("inverse\\({matrix}) is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
-            assert(m.inverse() approx exp)
+            assert(m.inverse approx exp)
         }
 
         Then("{matrix} is the following 4x4 matrix:") { m: MATRIX, exp: MATRIX ->
@@ -188,7 +188,7 @@ class StepDefs : En {
         Then("{matrix} is not invertible") { m: MATRIX -> assert(!m.isInvertable()) }
 
         Then("{matrix} * inverse\\({matrix}) = {matrix}") { matrix: Matrix<D4>, matrix2: Matrix<D4>, matrix3: Matrix<D4> ->
-            assert(matrix * matrix2.inverse() == matrix3)
+            assert(matrix * matrix2.inverse == matrix3)
         }
 
         Then("position\\({}, {float}) = {tuple}") { name: String, point: Float, exp: TUPLE ->

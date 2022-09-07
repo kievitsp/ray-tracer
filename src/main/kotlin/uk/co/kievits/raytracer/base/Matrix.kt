@@ -1,7 +1,9 @@
 package uk.co.kievits.raytracer.base
 
 import jdk.incubator.vector.FloatVector
+import jdk.incubator.vector.VectorMask
 import jdk.incubator.vector.VectorOperators
+import jdk.incubator.vector.VectorShuffle
 import jdk.incubator.vector.VectorSpecies
 import java.lang.StringBuilder
 
@@ -21,6 +23,23 @@ class Matrix<D : Dimension> private constructor(
         dimension,
     )
 
+    val inverse by lazy(LazyThreadSafetyMode.NONE) {
+        val new = FloatArray(dimension.size) {
+            val (row, column) = dimension.rowAndColumn(it)
+            cofactor(row, column)
+        }
+
+        FloatVector.fromArray(dimension.species, new, 0)
+            .rearrange(dimension.transposeShuffle)
+            .div(determinant())
+            .toMatrix()
+    }
+
+    val transpose: Matrix<D> by lazy(LazyThreadSafetyMode.NONE) {
+        vector.rearrange(dimension.transposeShuffle)
+            .toMatrix()
+    }
+
     infix fun napprox(other: Matrix<*>): Boolean = !approx(other)
 
     infix fun approx(other: Matrix<*>): Boolean {
@@ -39,11 +58,7 @@ class Matrix<D : Dimension> private constructor(
     private fun row(row: Int): FloatVector = vector.rearrange(dimension.rowShuffles[row])
         .toSpecies(Tuple.SPECIES)
 
-    private fun rows() = buildList {
-        for (rowId in 0 until dimension.width) {
-            add(row(rowId))
-        }
-    }
+    private fun rows() = Array(dimension.width) { rowId -> row(rowId) }
 
     private fun column(column: Int): FloatVector = vector.rearrange(dimension.columnShuffles[column])
         .toSpecies(Tuple.SPECIES)
@@ -54,43 +69,62 @@ class Matrix<D : Dimension> private constructor(
         }
     }
 
-    fun inverse(): Matrix<D> {
-        require(isInvertable())
-
-        val new = FloatArray(dimension.size) {
-            val (row, column) = dimension.rowAndColumn(it)
-            cofactor(row, column)
-        }
-
-        return FloatVector.fromArray(dimension.species, new, 0)
-            .rearrange(dimension.transposeShuffle)
-            .div(determinant())
-            .toMatrix()
-    }
-
-    fun transpose(): Matrix<D> = vector
-        .rearrange(dimension.transposeShuffle)
-        .toMatrix()
+//    fun inverse(): Matrix<D> {
+//        assert(isInvertable())
+//
+//        val new = FloatArray(dimension.size) {
+//            val (row, column) = dimension.rowAndColumn(it)
+//            cofactor(row, column)
+//        }
+//
+//        return FloatVector.fromArray(dimension.species, new, 0)
+//            .rearrange(dimension.transposeShuffle)
+//            .div(determinant())
+//            .toMatrix()
+//    }
 
     operator fun times(other: Matrix<D>): Matrix<D> {
-        require(dimension == other.dimension) { "$dimension vs ${other.dimension}" }
-        val rows = rows()
-        val columns = other.columns()
+        assert(dimension == other.dimension) { "$dimension vs ${other.dimension}" }
+        var columns = other.transpose.vector
+        val array = FloatArray(dimension.size)
+        val width = dimension.width
+        for (i in 0 until width) {
+            val result = vector * columns
 
-        val array = FloatArray(dimension.size) { id ->
-            val (row, column) = dimension.rowAndColumn(id)
-            rows[row] dot columns[column]
+            val value0 = result.reduceLanes(VectorOperators.ADD, mask0)
+            val value1 = result.reduceLanes(VectorOperators.ADD, mask1)
+            val value2 = result.reduceLanes(VectorOperators.ADD, mask2)
+            val value3 = result.reduceLanes(VectorOperators.ADD, mask3)
+
+            array[D4.index(0, (0 + i) % width)] = value0
+            array[D4.index(1, (1 + i) % width)] = value1
+            array[D4.index(2, (2 + i) % width)] = value2
+            array[D4.index(3, (3 + i) % width)] = value3
+
+            columns = columns.rearrange(jump)
         }
+
         return Matrix(array, dimension)
     }
 
     operator fun times(other: Tuple): Tuple {
-        require(dimension.width == 4) { "$dimension" }
-        val rows = rows()
+        assert(dimension.width == 4) { "$dimension" }
+        val column = FloatVector.fromArray(D4.species, FloatArray(16) { other.vector.lane(it % 4) }, 0)
 
-        val array = FloatArray(dimension.width) { id ->
-            rows[id] dot other.vector
-        }
+        val result = vector * column
+
+        val value0 = result.reduceLanes(VectorOperators.ADD, mask0)
+        val value1 = result.reduceLanes(VectorOperators.ADD, mask1)
+        val value2 = result.reduceLanes(VectorOperators.ADD, mask2)
+        val value3 = result.reduceLanes(VectorOperators.ADD, mask3)
+
+        val array = FloatArray(4)
+
+        array[0] = value0
+        array[1] = value1
+        array[2] = value2
+        array[3] = value3
+
         return Tuple(array)
     }
 
@@ -156,6 +190,31 @@ class Matrix<D : Dimension> private constructor(
         }
 
         fun D4(vararg array: Float): Matrix<D4> = Matrix(array, D4)
+
+        private val mask0 = buildVectorMask(0)
+        private val mask1 = buildVectorMask(1)
+        private val mask2 = buildVectorMask(2)
+        private val mask3 = buildVectorMask(3)
+
+        private val jump = VectorShuffle.fromArray(
+            D4.species,
+            intArrayOf(
+                4, 5, 6, 7,
+                8, 9, 10, 11,
+                12, 13, 14, 15,
+                0, 1, 2, 3,
+            ),
+            0
+        )
+
+        fun buildVectorMask(id: Int): VectorMask<Float> {
+            val min = id * 4
+            val max = (id + 1) * 4
+            return VectorMask.fromArray(D4.species, BooleanArray(16) { id -> id in min until max }, 0)
+        }
+
+        init {
+        }
     }
 }
 

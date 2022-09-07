@@ -5,5 +5,5 @@ import uk.co.kievits.raytracer.base.POINT
 
 abstract class BasePattern : Pattern() {
     abstract fun at(point: POINT): COLOR
-    override fun atPattern(shapePoint: POINT): COLOR = at(inverseTransform * shapePoint)
+    override fun atPattern(shapePoint: POINT): COLOR = at(transform.inverse * shapePoint)
 }

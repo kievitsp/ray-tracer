@@ -10,20 +10,8 @@ import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.material.Material
 
 abstract class WorldAware(
-    transform: Matrix<D4>,
-) {
-    var inverseTransform: Matrix<D4> = transform.inverse()
-        private set
-    var inverseTranspose: Matrix<D4> = inverseTransform.transpose()
-        private set
-
-    var transform: Matrix<D4> = transform
-        set(value) {
-            field = value
-            inverseTransform = value.inverse()
-            inverseTranspose = inverseTransform.transpose()
-        }
-}
+    var transform: Matrix<D4>,
+)
 
 abstract class Shape(
     transform: Matrix<D4> = IdentityMatrix(),
@@ -33,9 +21,9 @@ abstract class Shape(
     fun normalAt(
         worldPoint: POINT,
     ): VECTOR {
-        val objectPoint = inverseTransform * worldPoint
+        val objectPoint = transform.inverse * worldPoint
         val objectNormal = localNormalAt(objectPoint)
-        val worldNormal = inverseTranspose * objectNormal
+        val worldNormal = transform.inverse.transpose * objectNormal
 
         return worldNormal.copy(w = 0f).normalise
     }
@@ -43,7 +31,7 @@ abstract class Shape(
     abstract fun localNormalAt(p: POINT): Tuple
 
     fun intersections(ray: Ray): Intersections {
-        val localRay = ray.transform(inverseTransform)
+        val localRay = ray.transform(transform.inverse)
         return localIntersections(localRay)
     }
 

@@ -1,6 +1,6 @@
 package uk.co.kievits.raytracer.together
 
-import kotlinx.coroutines.runBlocking
+import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.Colors.RED
 import uk.co.kievits.raytracer.base.Colors.WHITE
@@ -52,8 +52,22 @@ fun main() {
         }
 
         cube {
+            transform = translation(x = -2, y = 0) * scaling(.5)
+            material {
+                color = Color(0, 1, 0)
+                reflective = .10
+            }
+        }
+
+        cylinder {
             transform = translation(x = -2, y = 2) * scaling(.5)
-            material = mirror
+            material {
+                color = Color(0, 0, 1)
+                reflective = .10
+            }
+            closed = true
+            minimum = -2
+            maximum = 0
         }
     }
 
@@ -70,7 +84,12 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-        runBlocking { camera.renderAsync(world, ImageType.PNG) }
+        Thread.sleep(10_000)
+        camera.render(world, ImageType.PNG)
+//        runBlocking {
+//            delay(10_000)
+//            camera.renderAsync(world, ImageType.PNG)
+//        }
     }
 
     println("async time $aSyncTime")
