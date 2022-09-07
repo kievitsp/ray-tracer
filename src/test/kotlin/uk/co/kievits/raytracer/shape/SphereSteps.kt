@@ -26,7 +26,7 @@ class SphereSteps : En {
     init {
         ParameterType(
             "shape",
-            "([scpAB]\\w*|inner|outer|object|cyl)|(sphere|test_shape|plane|glass_sphere|cube|cylinder)\\(\\)"
+            "([scpAB]\\w*|inner|outer|object|cyl)|(sphere|test_shape|plane|glass_sphere|cube|cylinder|cone)\\(\\)"
         ) { value, new ->
             when {
                 value != null -> SharedVars.get<Shape>(value)
@@ -37,6 +37,7 @@ class SphereSteps : En {
                     "test_shape" -> TestShape()
                     "cube" -> Cube()
                     "cylinder" -> Cylinder()
+                    "cone" -> Cone()
                     else -> TODO(new.toString())
                 }
             }
@@ -45,9 +46,9 @@ class SphereSteps : En {
 
         Given("{variable} ← {shape}") { name: String, shape: Shape -> SharedVars[name] = shape }
 
-        Given("{shape}.maximum ← {number}") { shape: Cylinder, value: V -> shape.maximum = value }
-        Given("{shape}.minimum ← {number}") { shape: Cylinder, value: V -> shape.minimum = value }
-        Given("{shape}.closed ← {boolean}") { shape: Cylinder, value: Boolean -> shape.closed = value }
+        Given("{shape}.maximum ← {number}") { shape: CylinderLike, value: V -> shape.maximum = value }
+        Given("{shape}.minimum ← {number}") { shape: CylinderLike, value: V -> shape.minimum = value }
+        Given("{shape}.closed ← {boolean}") { shape: CylinderLike, value: Boolean -> shape.closed = value }
 
         Given("{variable} ← normalize\\({tuple})") { name: String, tuple: TUPLE ->
             SharedVars[name] = tuple.normalise
@@ -84,7 +85,7 @@ class SphereSteps : En {
             assert(xs.isEmpty())
         }
 
-        Then("{intersection}.t = {float}") { intersection: Intersection, exp: Float ->
+        Then("{intersection}.t = {double}") { intersection: Intersection, exp: V ->
             assert(intersection.t approx exp)
         }
 
@@ -109,17 +110,17 @@ class SphereSteps : En {
             assert(shape.savedRay?.direction == exp)
         }
 
-        Then("{shape}.material.{variable} = {float}") { shape: Shape, variable: String, exp: Float ->
+        Then("{shape}.material.{variable} = {double}") { shape: Shape, variable: String, exp: Double ->
             assertMaterial(shape.material, variable, exp)
         }
 
-        Then("{shape}.minimum = {number}") { shape: Cylinder, exp: Float ->
+        Then("{shape}.minimum = {number}") { shape: CylinderLike, exp: Double ->
             assert(shape.minimum == exp)
         }
-        Then("{shape}.maximum = {number}") { shape: Cylinder, exp: Float ->
+        Then("{shape}.maximum = {number}") { shape: CylinderLike, exp: Double ->
             assert(shape.maximum == exp)
         }
-        Then("{shape}.closed = {boolean}") { shape: Cylinder, exp: Boolean ->
+        Then("{shape}.closed = {boolean}") { shape: CylinderLike, exp: Boolean ->
             assert(shape.closed == exp)
         }
     }

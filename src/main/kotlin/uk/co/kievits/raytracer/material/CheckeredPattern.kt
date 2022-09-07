@@ -19,6 +19,6 @@ class CheckeredPattern(
 
     override fun atPattern(shapePoint: POINT): COLOR {
         val check = floor(shapePoint.x) + floor(shapePoint.y) + floor(shapePoint.z)
-        return if (floor(check) % 2.0f == .0f) first.atPattern(shapePoint) else second.atPattern(shapePoint)
+        return if (floor(check) % 2.0 == .0) first.atPattern(shapePoint) else second.atPattern(shapePoint)
     }
 }

@@ -6,7 +6,7 @@ import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
-import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.Vector
 import uk.co.kievits.raytracer.material.Material
 import kotlin.math.abs
@@ -15,7 +15,7 @@ class Plane(
     transform: Matrix<D4> = IdentityMatrix(),
     material: Material = Material(),
 ) : Shape(transform, material) {
-    override fun localNormalAt(p: POINT): Tuple = NORMAL
+    override fun localNormalAt(p: POINT): TUPLE = NORMAL
 
     override fun localIntersections(ray: Ray): Intersections {
         if (abs(ray.direction.y) < EPSILON) return Intersections.Miss

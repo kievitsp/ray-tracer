@@ -26,7 +26,7 @@ data class PartialResults(
                 val cos = eyeV dot normalV
                 val n = n1 / n2
                 val sin2t = n.pow(2) * (1f - cos.pow(2))
-                if (sin2t > 1f) return 1f
+                if (sin2t > 1.0) return 1.0
 
                 val cosT = sqrt(1f - sin2t)
                 cosT

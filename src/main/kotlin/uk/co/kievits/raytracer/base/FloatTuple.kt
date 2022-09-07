@@ -3,46 +3,51 @@ package uk.co.kievits.raytracer.base
 import jdk.incubator.vector.FloatVector
 import jdk.incubator.vector.VectorOperators
 import jdk.incubator.vector.VectorShuffle
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 // @JvmInline
 // value
-class Tuple(
+@Deprecated("meh", level = DeprecationLevel.WARNING)
+class FloatTuple(
     val vector: FloatVector,
 ) {
     init {
-        require(vector.species() == SPECIES) { vector }
+        assert(vector.species() == SPECIES) { vector }
     }
 
     fun copy(
-        x: V = this.x,
-        y: V = this.y,
-        z: V = this.z,
-        w: V = this.w,
-    ) = Tuple(floatArrayOf(x, y, z, w))
+        x: Float = this.x,
+        y: Float = this.y,
+        z: Float = this.z,
+        w: Float = this.w,
+    ) = FloatTuple(floatArrayOf(x, y, z, w))
 
     constructor(array: FloatArray) : this(FloatVector.fromArray(SPECIES, array, 0))
 
-    val x: V get() = vector.lane(0)
-    val y: V get() = vector.lane(1)
-    val z: V get() = vector.lane(2)
-    val w: V get() = vector.lane(3)
-    val red: V get() = vector.lane(0)
-    val green: V get() = vector.lane(1)
-    val blue: V get() = vector.lane(2)
+    val x: Float get() = vector.lane(0)
+    val y: Float get() = vector.lane(1)
+    val z: Float get() = vector.lane(2)
+    val w: Float get() = vector.lane(3)
+    val red: Float get() = vector.lane(0)
+    val green: Float get() = vector.lane(1)
+    val blue: Float get() = vector.lane(2)
+
+    operator fun component1(): Float = x
+    operator fun component2(): Float = y
+    operator fun component3(): Float = z
+    operator fun component4(): Float = w
 
     val isPoint: Boolean get() = w == POINT_W
     val isVector: Boolean get() = !isPoint
 
-    val magnitude: V
+    val magnitude: Float
         get() = sqrt(
             vector
                 .pow(2f)
                 .reduceLanes(VectorOperators.ADD)
         )
 
-    val normalise: Tuple get() = this / magnitude
+    val normalise: FloatTuple get() = this / magnitude
 
     constructor(x: Number, y: Number, z: Number, w: Number) : this(
         floatArrayOf(
@@ -53,21 +58,21 @@ class Tuple(
         )
     )
 
-    operator fun plus(other: Tuple): Tuple = (vector + other.vector).toTuple()
-    operator fun minus(other: Tuple): Tuple = (vector - other.vector).toTuple()
-    operator fun times(other: Tuple): Tuple = (vector * other.vector).toTuple()
-    operator fun div(other: Tuple): Tuple = (vector / other.vector).toTuple()
+    operator fun plus(other: FloatTuple): FloatTuple = (vector + other.vector).toTuple()
+    operator fun minus(other: FloatTuple): FloatTuple = (vector - other.vector).toTuple()
+    operator fun times(other: FloatTuple): FloatTuple = (vector * other.vector).toTuple()
+    operator fun div(other: FloatTuple): FloatTuple = (vector / other.vector).toTuple()
 
-    operator fun plus(other: V): Tuple = (vector + other).toTuple()
-    operator fun minus(other: V): Tuple = (vector - other).toTuple()
-    operator fun times(other: V): Tuple = (vector * other).toTuple()
-    operator fun div(other: V): Tuple = (vector / other).toTuple()
+    operator fun plus(other: Float): FloatTuple = (vector + other).toTuple()
+    operator fun minus(other: Float): FloatTuple = (vector - other).toTuple()
+    operator fun times(other: Float): FloatTuple = (vector * other).toTuple()
+    operator fun div(other: Float): FloatTuple = (vector / other).toTuple()
 
-    operator fun unaryMinus(): Tuple = (-vector).toTuple()
+    operator fun unaryMinus(): FloatTuple = (-vector).toTuple()
 
-    infix fun dot(other: Tuple): Float = vector dot other.vector
+    infix fun dot(other: FloatTuple): Float = vector dot other.vector
 
-    infix fun cross(other: Tuple): Tuple {
+    infix fun cross(other: FloatTuple): FloatTuple {
         val a = vector
         val b = other.vector
 
@@ -80,7 +85,7 @@ class Tuple(
         return first.sub(second).toTuple()
     }
 
-    infix fun approx(other: Tuple): Boolean {
+    infix fun approx(other: FloatTuple): Boolean {
         val maxDiff = vector.sub(other.vector)
             .abs()
             .reduceLanes(VectorOperators.MAX)
@@ -88,16 +93,16 @@ class Tuple(
         return maxDiff < (EPSILON * 2)
     }
 
-    infix fun reflect(normal: Tuple): Tuple = this - (normal * 2f * (this dot normal))
+    infix fun reflect(normal: FloatTuple): FloatTuple = this - (normal * 2f * (this dot normal))
 
-    private fun FloatVector.toTuple() = Tuple(this)
+    private fun FloatVector.toTuple() = FloatTuple(this)
 
-    fun copy() = Tuple(vector.toArray())
+    fun copy() = FloatTuple(vector.toArray())
 
     override fun toString(): String = vector.toArray().contentToString()
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Tuple) return false
+        if (other !is FloatTuple) return false
         return this.approx(other)
     }
 
@@ -108,15 +113,11 @@ class Tuple(
 
         private val yzxShuffle = VectorShuffle.fromArray(SPECIES, intArrayOf(1, 2, 0, 3), 0)
         private val zxyShuffle = VectorShuffle.fromArray(SPECIES, intArrayOf(2, 0, 1, 3), 0)
+
+        const val POINT_W: Float = 1.0f
+        const val VECTOR_W: Float = 0.0f
     }
 }
-
-val V.bitValue: Int
-    get() = when {
-        this > 1.0 -> 255
-        this < 0 -> 0
-        else -> (this * 255.0).roundToInt()
-    }
 
 operator fun FloatVector.plus(other: FloatVector) = add(other)
 operator fun FloatVector.minus(other: FloatVector) = sub(other)

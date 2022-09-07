@@ -8,5 +8,5 @@ class StripedPattern(
     val first: COLOR,
     val second: COLOR,
 ) : BasePattern() {
-    override fun at(point: POINT): COLOR = if (floor(point.x) % 2.0f == .0f) first else second
+    override fun at(point: POINT): COLOR = if (floor(point.x) % 2.0 == .0) first else second
 }

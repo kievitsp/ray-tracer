@@ -20,6 +20,6 @@ class RingPattern(
 
     override fun atPattern(shapePoint: POINT): COLOR {
         val distance = sqrt(shapePoint.x.pow(2) + shapePoint.z.pow(2))
-        return if (floor(distance) % 2.0f == .0f) first.atPattern(shapePoint) else second.atPattern(shapePoint)
+        return if (floor(distance) % 2.0 == .0) first.atPattern(shapePoint) else second.atPattern(shapePoint)
     }
 }

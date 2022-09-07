@@ -6,7 +6,7 @@ import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.MATRIX
 import uk.co.kievits.raytracer.base.Point
-import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.Vector
 import uk.co.kievits.raytracer.base.rotationX
@@ -48,20 +48,20 @@ object SharedVars {
         }
     }
 
-    fun parseFloats(string: String): List<Float> = string.split(numberSplitter)
+    fun parseFloats(string: String): List<V> = string.split(numberSplitter)
         .map { parseFloat(it) }
 
-    fun parseFloat(string: String): Float = when {
+    fun parseFloat(string: String): V = when {
         string.contains("/") -> string.split("/")
             .map { parseFloat(it.trim()) }
             .reduce { a, b -> a / b }
 
         string.startsWith("√") -> sqrt(parseFloat(string.substring(1)))
         string.startsWith("-") -> -parseFloat(string.substring(1))
-        string == "π" -> PI.toFloat()
+        string == "π" -> PI
         string == "EPSILON" -> EPSILON
         string == "infinity" -> V.POSITIVE_INFINITY
-        else -> string.toFloat()
+        else -> string.toDouble()
     }
 
     fun buildTuple(
@@ -72,7 +72,7 @@ object SharedVars {
         args != null && type != null -> {
             val floats = parseFloats(args)
             when (type) {
-                "tuple" -> Tuple(floats[0], floats[1], floats[2], floats[3])
+                "tuple" -> TUPLE(floats[0], floats[1], floats[2], floats[3])
                 "point" -> Point(floats[0], floats[1], floats[2])
                 "vector" -> Vector(floats[0], floats[1], floats[2])
                 "color" -> Color(floats[0], floats[1], floats[2])

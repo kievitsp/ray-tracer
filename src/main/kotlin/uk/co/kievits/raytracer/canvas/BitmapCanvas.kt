@@ -1,7 +1,6 @@
 package uk.co.kievits.raytracer.canvas
 
 import uk.co.kievits.raytracer.base.COLOR
-import uk.co.kievits.raytracer.base.bitValue
 import java.awt.image.BufferedImage
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -10,7 +9,7 @@ import javax.imageio.ImageIO
 class BitmapCanvas(
     override val width: Int,
     override val height: Int,
-) : Canvas {
+) : Canvas() {
 
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
 

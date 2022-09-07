@@ -41,14 +41,14 @@ class CameraSteps : En {
             "nVar",
             "[hv]size|field_of_view"
         ) { name: String ->
-            SharedVars.get<Float>(name)
+            SharedVars.get<Double>(name)
         }
 
-        Given("{variable} ← {number}") { name: String, value: Float ->
+        Given("{variable} ← {number}") { name: String, value: Double ->
             SharedVars[name] = value
         }
 
-        When("c ← camera\\({nVar}, {nVar}, {nVar})") { hsize: Float, vsize: Float, viewOfView: Float ->
+        When("c ← camera\\({nVar}, {nVar}, {nVar})") { hsize: Double, vsize: Double, viewOfView: Double ->
             camera = Camera(
                 hSize = hsize.toInt(),
                 vSize = vsize.toInt(),
@@ -56,7 +56,7 @@ class CameraSteps : En {
             )
         }
 
-        When("c ← camera\\({number}, {number}, {number})") { hsize: Float, vsize: Float, viewOfView: Float ->
+        When("c ← camera\\({number}, {number}, {number})") { hsize: Double, vsize: Double, viewOfView: Double ->
             camera = Camera(
                 hSize = hsize.toInt(),
                 vSize = vsize.toInt(),
@@ -80,10 +80,10 @@ class CameraSteps : En {
             image = camera.render(world)
         }
 
-        Then("c.hsize = {number}") { expected: Float -> assert(camera.hSize == expected.toInt()) }
-        Then("c.vsize = {number}") { expected: Float -> assert(camera.vSize == expected.toInt()) }
-        Then("c.field_of_view = {number}") { expected: Float -> assert(camera.fieldOfView == expected) }
-        Then("c.pixel_size = {number}") { expected: Float -> assert(camera.pixelSize approx expected) }
+        Then("c.hsize = {number}") { expected: Double -> assert(camera.hSize == expected.toInt()) }
+        Then("c.vsize = {number}") { expected: Double -> assert(camera.vSize == expected.toInt()) }
+        Then("c.field_of_view = {number}") { expected: Double -> assert(camera.fieldOfView == expected) }
+        Then("c.pixel_size = {number}") { expected: Double -> assert(camera.pixelSize approx expected) }
         Then("c.transform = {matrix}") { expected: MATRIX -> assert(camera.transform == expected) }
 
         Then("r.origin = {tuple}") { exp: TUPLE -> assert(ray.origin == exp) }

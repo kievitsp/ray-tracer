@@ -74,8 +74,8 @@ class SharedSteps : En {
             assert(actual approx exp)
         }
 
-        Then("{variable} = {number}") { name: String, exp: Float ->
-            assert(SharedVars.get<Float>(name) approx exp)
+        Then("{variable} = {number}") { name: String, exp: Double ->
+            assert(SharedVars.get<Double>(name) approx exp)
         }
 
         Given("{variable} ← {matrix} * {matrix}") { name: String, m1: Matrix<D4>, m2: Matrix<D4> ->

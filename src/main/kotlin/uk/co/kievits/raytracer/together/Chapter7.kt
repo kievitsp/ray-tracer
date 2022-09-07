@@ -27,7 +27,7 @@ fun main() {
         transform = scaling(10, 0.01, 10)
         material.apply {
             color = Color(1, 0.9, 0.9)
-            specular = 0f
+            specular = 0.0
         }
     }
 
@@ -49,8 +49,8 @@ fun main() {
         transform = translation(-0.5, 1, 0.5)
         material.apply {
             color = Color(0.1, 1, .5)
-            diffuse = 0.7f
-            specular = 0.3f
+            diffuse = 0.7
+            specular = 0.3
         }
     }
 
@@ -58,8 +58,8 @@ fun main() {
         transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
         material.apply {
             color = Color(0.5, 1, .1)
-            diffuse = 0.7f
-            specular = 0.3f
+            diffuse = 0.7
+            specular = 0.3
         }
     }
 
@@ -67,8 +67,8 @@ fun main() {
         transform = translation(-1.5, 0.33, -.75) * scaling(.33, .33, .33)
         material.apply {
             color = Color(1, 0.8, 0.1)
-            diffuse = 0.7f
-            specular = 0.3f
+            diffuse = 0.7
+            specular = 0.3
         }
     }
 
@@ -87,7 +87,7 @@ fun main() {
     val camera = Camera(
         hSize = 600,
         vSize = 600,
-        fieldOfView = (PI / 3).toFloat(),
+        fieldOfView = (PI / 3),
     )
 
     camera.transform = viewTransformation(

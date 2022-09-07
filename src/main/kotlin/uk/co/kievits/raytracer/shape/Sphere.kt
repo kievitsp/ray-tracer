@@ -52,8 +52,8 @@ class Sphere(
 
     companion object {
         fun Glass(): Sphere = Sphere().apply {
-            material.transparency = 1f
-            material.refractiveIndex = 1.5f
+            material.transparency = 1.0
+            material.refractiveIndex = 1.5
         }
 
         private val pointZero = PointZero()

@@ -63,14 +63,14 @@ class StepDefs : En {
         Given("{} ← transpose\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.transpose }
         Given("{} ← inverse\\({matrix})") { name: String, m: MATRIX -> vars[name] = m.inverse }
 
-        Then("{tuple}.x = {float}") { tuple: TUPLE, value: Float -> assert(tuple.x == value) }
-        Then("{tuple}.y = {float}") { tuple: TUPLE, value: Float -> assert(tuple.y == value) }
-        Then("{tuple}.z = {float}") { tuple: TUPLE, value: Float -> assert(tuple.z == value) }
-        Then("{tuple}.w = {float}") { tuple: TUPLE, value: Float -> assert(tuple.w == value) }
+        Then("{tuple}.x = {double}") { tuple: TUPLE, value: V -> assert(tuple.x == value) }
+        Then("{tuple}.y = {double}") { tuple: TUPLE, value: V -> assert(tuple.y == value) }
+        Then("{tuple}.z = {double}") { tuple: TUPLE, value: V -> assert(tuple.z == value) }
+        Then("{tuple}.w = {double}") { tuple: TUPLE, value: V -> assert(tuple.w == value) }
 
-        Then("{tuple}.red = {float}") { tuple: TUPLE, value: Float -> assert(tuple.red == value) }
-        Then("{tuple}.green = {float}") { tuple: TUPLE, value: Float -> assert(tuple.green == value) }
-        Then("{tuple}.blue = {float}") { tuple: TUPLE, value: Float -> assert(tuple.blue == value) }
+        Then("{tuple}.red = {double}") { tuple: TUPLE, value: V -> assert(tuple.red == value) }
+        Then("{tuple}.green = {double}") { tuple: TUPLE, value: V -> assert(tuple.green == value) }
+        Then("{tuple}.blue = {double}") { tuple: TUPLE, value: V -> assert(tuple.blue == value) }
 
         Then("{tuple} is a point") { tuple: TUPLE ->
             assert(tuple.isPoint)
@@ -101,7 +101,7 @@ class StepDefs : En {
             )
         }
 
-        Then("{tuple} {operator} {float} = {tuple}") { a: TUPLE, op: Operator, b: Float, c: TUPLE ->
+        Then("{tuple} {operator} {double} = {tuple}") { a: TUPLE, op: Operator, b: V, c: TUPLE ->
             assert(
                 when (op) {
                     Operator.PLUS -> a + b
@@ -112,15 +112,15 @@ class StepDefs : En {
             )
         }
 
-        Then("magnitude\\({tuple}) = {number}") { value: TUPLE, exp: Float -> assert(value.magnitude approx exp) }
+        Then("magnitude\\({tuple}) = {number}") { value: TUPLE, exp: V -> assert(value.magnitude approx exp) }
         Then("normalize\\({tuple}) = {tuple}") { value: TUPLE, exp: TUPLE -> assert(value.normalise == exp) }
         Then("normalize\\({tuple}) = approximately {tuple}") { value: TUPLE, exp: TUPLE -> assert(value.normalise approx exp) }
         When("{} ← normalize\\({tuple})") { name: String, exp: TUPLE -> vars[name] = exp.normalise }
-        Then("dot\\({tuple}, {tuple}) = {float}") { a: TUPLE, b: TUPLE, exp: Float -> assert(a dot b == exp) }
+        Then("dot\\({tuple}, {tuple}) = {double}") { a: TUPLE, b: TUPLE, exp: V -> assert(a dot b == exp) }
         Then("cross\\({tuple}, {tuple}) = {tuple}") { a: TUPLE, b: TUPLE, exp: TUPLE -> assert(a cross b == exp) }
 
-        Then("{matrix}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: Float ->
-            assert(matrix[x, y] approx number)
+        Then("{matrix}[{int},{int}] = {number}") { matrix: MATRIX, x: Int, y: Int, number: V ->
+            assert(matrix[x, y] approx number.toFloat())
         }
 
         Then("{matrix} = {matrix}") { a: MATRIX, b: MATRIX -> assert(a approx b) }
@@ -191,7 +191,7 @@ class StepDefs : En {
             assert(matrix * matrix2.inverse == matrix3)
         }
 
-        Then("position\\({}, {float}) = {tuple}") { name: String, point: Float, exp: TUPLE ->
+        Then("position\\({}, {double}) = {tuple}") { name: String, point: V, exp: TUPLE ->
             val ray: Ray = get(name)
             assert(ray.position(point) == exp)
         }

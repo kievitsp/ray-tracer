@@ -5,31 +5,36 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-typealias V = Float
-typealias TUPLE = Tuple
+typealias V = Double
+typealias TUPLE = DoubleTuple
 typealias MATRIX = Matrix<*>
 typealias CANVAS = PpmCanvas
 typealias COLOR = TUPLE
 typealias VECTOR = TUPLE
 typealias POINT = TUPLE
 
-const val POINT_W: V = 1.0f
-const val VECTOR_W: V = 0.0f
-const val EPSILON: V = 0.00001f
+const val EPSILON: V = TUPLE.EPSILON
 
 fun PointZero() = Point(0f, 0f, 0f)
-fun Point(x: Number, y: Number, z: Number) = Tuple(x, y, z, POINT_W)
-fun Point(x: Float, y: Float, z: Float) = Tuple(x, y, z, POINT_W)
-fun Vector(x: Number, y: Number, z: Number) = Tuple(x, y, z, VECTOR_W)
-fun Color(x: Number, y: Number, z: Number) = Tuple(x, y, z, 0)
+fun Point(x: Number, y: Number, z: Number) = TUPLE(x, y, z, TUPLE.POINT_W)
+fun Point(x: V, y: V, z: V) = TUPLE(x, y, z, TUPLE.POINT_W)
+fun Vector(x: Number, y: Number, z: Number) = TUPLE(x, y, z, TUPLE.VECTOR_W)
+fun Color(red: Number, green: Number, blue: Number) = COLOR(red, green, blue, 0)
 
-infix fun V.approx(other: V): Boolean {
+fun Number.toV(): V = toDouble()
+
+infix fun Double.approx(other: Double): Boolean {
     val diff = abs(this - other)
-    return diff < EPSILON
+    return diff < (2 * EPSILON)
+}
+
+infix fun Float.approx(other: Float): Boolean {
+    val diff = abs(this - other)
+    return diff < (2 * EPSILON)
 }
 
 fun translation(x: Number = 0, y: Number = 0, z: Number = 0) = translation(x.toFloat(), y.toFloat(), z.toFloat())
-fun translation(x: V, y: V, z: V) = Matrix.D4(
+fun translation(x: Float, y: Float, z: Float) = Matrix.D4(
     1f, 0f, 0f, x,
     0f, 1f, 0f, y,
     0f, 0f, 1f, z,
@@ -37,9 +42,9 @@ fun translation(x: V, y: V, z: V) = Matrix.D4(
 )
 
 fun scaling(scale: Number) = scaling(scale, scale, scale)
-fun scaling(x: Number, y: Number, z: Number) = scaling(x.toFloat(), y.toFloat(), z.toFloat())
+fun scaling(x: Number = 0, y: Number = 0, z: Number = 0) = scaling(x.toFloat(), y.toFloat(), z.toFloat())
 
-fun scaling(x: V, y: V, z: V) = Matrix.D4(
+fun scaling(x: Float, y: Float, z: Float) = Matrix.D4(
     x, 0f, 0f, 0f,
     0f, y, 0f, 0f,
     0f, 0f, z, 0f,
@@ -48,7 +53,7 @@ fun scaling(x: V, y: V, z: V) = Matrix.D4(
 
 fun rotationX(r: Number) = rotationX(r.toFloat())
 
-fun rotationX(r: V) = Matrix.D4(
+fun rotationX(r: Float) = Matrix.D4(
     1f, 0f, 0f, 0f,
     0f, cos(r), -sin(r), 0f,
     0f, sin(r), cos(r), 0f,
@@ -56,7 +61,7 @@ fun rotationX(r: V) = Matrix.D4(
 )
 
 fun rotationY(r: Number) = rotationY(r.toFloat())
-fun rotationY(r: V) = Matrix.D4(
+fun rotationY(r: Float) = Matrix.D4(
     cos(r), 0f, sin(r), 0f,
     0f, 1f, 0f, 0f,
     -sin(r), 0f, cos(r), 0f,
@@ -64,7 +69,7 @@ fun rotationY(r: V) = Matrix.D4(
 )
 
 fun rotationZ(r: Number) = rotationZ(r.toFloat())
-fun rotationZ(r: V) = Matrix.D4(
+fun rotationZ(r: Float) = Matrix.D4(
     cos(r), -sin(r), 0f, 0f,
     sin(r), cos(r), 0f, 0f,
     0f, 0f, 1f, 0f,
@@ -72,12 +77,28 @@ fun rotationZ(r: V) = Matrix.D4(
 )
 
 fun shearing(
-    xy: V,
-    xz: V,
-    yx: V,
-    yz: V,
-    zx: V,
-    zy: V,
+    xy: Number,
+    xz: Number,
+    yx: Number,
+    yz: Number,
+    zx: Number,
+    zy: Number,
+) = shearing(
+    xy = xy.toFloat(),
+    xz = xz.toFloat(),
+    yx = yx.toFloat(),
+    yz = yz.toFloat(),
+    zx = zx.toFloat(),
+    zy = zy.toFloat(),
+)
+
+fun shearing(
+    xy: Float,
+    xz: Float,
+    yx: Float,
+    yz: Float,
+    zx: Float,
+    zy: Float,
 ) = Matrix.D4(
     1f, xy, xz, 0f,
     yx, 1f, yz, 0f,

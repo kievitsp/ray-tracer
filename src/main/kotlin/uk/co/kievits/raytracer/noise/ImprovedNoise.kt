@@ -1,11 +1,11 @@
 package uk.co.kievits.raytracer.noise
 
-import java.lang.StrictMath.floor
+import uk.co.kievits.raytracer.base.V
 import kotlin.math.floor
 
 // JAVA REFERENCE IMPLEMENTATION OF IMPROVED NOISE - COPYRIGHT 2002 KEN PERLIN.
 object ImprovedNoise {
-    fun noise(x: Float, y: Float, z: Float): Float {
+    fun noise(x: V, y: V, z: V): V {
         var x = x
         var y = y
         var z = z
@@ -56,15 +56,15 @@ object ImprovedNoise {
         )
     }
 
-    private fun fade(t: Float): Float {
+    private fun fade(t: V): V {
         return t * t * t * (t * (t * 6 - 15) + 10)
     }
 
-    private fun lerp(t: Float, a: Float, b: Float): Float {
+    private fun lerp(t: V, a: V, b: V): V {
         return a + t * (b - a)
     }
 
-    private fun grad(hash: Int, x: Float, y: Float, z: Float): Float {
+    private fun grad(hash: Int, x: V, y: V, z: V): V {
         val h = hash and 15 // CONVERT LO 4 BITS OF HASH CODE
         val u = if (h < 8) x else y
         // INTO 12 GRADIENT DIRECTIONS.

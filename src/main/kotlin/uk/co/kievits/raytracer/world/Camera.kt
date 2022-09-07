@@ -36,8 +36,8 @@ class Camera(
     private var origin = this.transform.inverse * Point(0f, 0f, 0f)
 
     val pixelSize: V
-    val halfWidth: Float
-    val halfHeight: Float
+    val halfWidth: V
+    val halfHeight: V
 
     init {
         val halfView = tan(fieldOfView / 2)

@@ -8,6 +8,7 @@ import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
 import uk.co.kievits.raytracer.base.TUPLE
+import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.cucumber.SharedVars
 import uk.co.kievits.raytracer.cucumber.SharedVars.numberPattern
@@ -115,7 +116,7 @@ class ShapeSteps : En {
 
         Given("{variable} ← {material}") { name: String, material: Material -> SharedVars[name] = material }
 
-        Given("{material}.{variable} ← {float}") { material: Material, variable: String, value: Float ->
+        Given("{material}.{variable} ← {double}") { material: Material, variable: String, value: Double ->
             when (variable) {
                 "ambient" -> material.ambient = value
                 "diffuse" -> material.diffuse = value
@@ -164,7 +165,7 @@ class ShapeSteps : En {
             pattern.transform = matrix
         }
 
-        When("{} ← intersection\\({number}, {shape})") { name: String, t: Float, shape: Shape ->
+        When("{} ← intersection\\({number}, {shape})") { name: String, t: Double, shape: Shape ->
             SharedVars[name] = Intersection(t, shape)
         }
 
@@ -235,7 +236,7 @@ class ShapeSteps : En {
             world.light = PointLight(position = point, intensity = color)
         }
 
-        When("{shape}.material.ambient ← {float}") { shape: Shape, ambient: Float ->
+        When("{shape}.material.ambient ← {double}") { shape: Shape, ambient: Double ->
             shape.material.ambient = ambient
         }
 
@@ -271,7 +272,7 @@ class ShapeSteps : En {
             assert(ray.direction == exp)
         }
 
-        Then("position\\({ray}, {float}) = {tuple}") { ray: Ray, point: Float, exp: TUPLE ->
+        Then("position\\({ray}, {double}) = {tuple}") { ray: Ray, point: Double, exp: TUPLE ->
             assert(ray.position(point) == exp)
         }
 
@@ -293,7 +294,7 @@ class ShapeSteps : En {
 
         Then("{material}.color = {tuple}") { material: Material, color: COLOR -> assert(material.color == color) }
 
-        Then("{material}.{variable} = {float}") { material: Material, variable: String, exp: Float ->
+        Then("{material}.{variable} = {double}") { material: Material, variable: String, exp: V ->
             assertMaterial(material, variable, exp)
         }
 
@@ -324,16 +325,16 @@ class ShapeSteps : En {
         Then("{comps}.normalv = {tuple}") { comps: PartialResults, normalv: VECTOR -> assert(comps.normalV == normalv) }
         Then("{comps}.inside = {boolean}") { comps: PartialResults, isInside: Boolean -> assert(comps.isInside == isInside) }
         Then("{comps}.reflectv = {tuple}") { comps: PartialResults, reflectv: VECTOR -> assert(comps.reflectV == reflectv) }
-        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: Float -> assert(comps.overPoint.z < exp) }
-        Then("{comps}.under_point.z > {number}") { comps: PartialResults, exp: Float -> assert(comps.underPoint.z > exp) }
+        Then("{comps}.over_point.z < {number}") { comps: PartialResults, exp: V -> assert(comps.overPoint.z < exp) }
+        Then("{comps}.under_point.z > {number}") { comps: PartialResults, exp: V -> assert(comps.underPoint.z > exp) }
         Then("{comps}.point.z > {comps}.over_point.z") { a: PartialResults, b: PartialResults ->
             assert(a.point.z > b.overPoint.z)
         }
         Then("{comps}.point.z < {comps}.under_point.z") { a: PartialResults, b: PartialResults ->
             assert(a.point.z < b.underPoint.z)
         }
-        Then("{comps}.n1 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n1 == exp) }
-        Then("{comps}.n2 = {number}") { comps: PartialResults, exp: Float -> assert(comps.n2 == exp) }
+        Then("{comps}.n1 = {number}") { comps: PartialResults, exp: Double -> assert(comps.n1 == exp) }
+        Then("{comps}.n2 = {number}") { comps: PartialResults, exp: Double -> assert(comps.n2 == exp) }
 
         Then("{tuple} = {shape}.material.color") { color: COLOR, shape: Shape ->
             assert(color == shape.material.color)
@@ -360,7 +361,7 @@ class ShapeSteps : En {
     }
 }
 
-fun assertMaterial(material: Material, variable: String, exp: Float) {
+fun assertMaterial(material: Material, variable: String, exp: Double) {
     when (variable) {
         "ambient" -> assert(material.ambient == exp)
         "diffuse" -> assert(material.diffuse == exp)

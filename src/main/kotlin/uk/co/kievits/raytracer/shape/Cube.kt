@@ -3,7 +3,7 @@ package uk.co.kievits.raytracer.shape
 import uk.co.kievits.raytracer.base.EPSILON
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
-import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.V
 import uk.co.kievits.raytracer.base.Vector
 import kotlin.math.abs
@@ -11,7 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class Cube : Shape() {
-    override fun localNormalAt(p: POINT): Tuple {
+    override fun localNormalAt(p: POINT): TUPLE {
         val absX = abs(p.x)
         val absY = abs(p.y)
         val absZ = abs(p.z)

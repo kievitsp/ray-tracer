@@ -5,7 +5,7 @@ import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
-import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.base.VECTOR
 import uk.co.kievits.raytracer.material.Material
 
@@ -25,10 +25,10 @@ abstract class Shape(
         val objectNormal = localNormalAt(objectPoint)
         val worldNormal = transform.inverse.transpose * objectNormal
 
-        return worldNormal.copy(w = 0f).normalise
+        return worldNormal.copy(w = 0.0).normalise
     }
 
-    abstract fun localNormalAt(p: POINT): Tuple
+    abstract fun localNormalAt(p: POINT): TUPLE
 
     fun intersections(ray: Ray): Intersections {
         val localRay = ray.transform(transform.inverse)

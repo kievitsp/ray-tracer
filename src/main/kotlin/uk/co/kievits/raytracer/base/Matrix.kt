@@ -56,12 +56,12 @@ class Matrix<D : Dimension> private constructor(
     }
 
     private fun row(row: Int): FloatVector = vector.rearrange(dimension.rowShuffles[row])
-        .toSpecies(Tuple.SPECIES)
+        .toSpecies(FloatTuple.SPECIES)
 
     private fun rows() = Array(dimension.width) { rowId -> row(rowId) }
 
     private fun column(column: Int): FloatVector = vector.rearrange(dimension.columnShuffles[column])
-        .toSpecies(Tuple.SPECIES)
+        .toSpecies(FloatTuple.SPECIES)
 
     private fun columns() = buildList {
         for (columnId in 0 until dimension.width) {
@@ -107,7 +107,7 @@ class Matrix<D : Dimension> private constructor(
         return Matrix(array, dimension)
     }
 
-    operator fun times(other: Tuple): Tuple {
+    operator fun times(other: FloatTuple): FloatTuple {
         assert(dimension.width == 4) { "$dimension" }
         val column = FloatVector.fromArray(D4.species, FloatArray(16) { other.vector.lane(it % 4) }, 0)
 
@@ -125,7 +125,28 @@ class Matrix<D : Dimension> private constructor(
         array[2] = value2
         array[3] = value3
 
-        return Tuple(array)
+        return FloatTuple(array)
+    }
+
+    operator fun times(other: DoubleTuple): DoubleTuple {
+        assert(dimension.width == 4) { "$dimension" }
+        val column = FloatVector.fromArray(D4.species, FloatArray(16) { other.vector.lane(it % 4).toFloat() }, 0)
+
+        val result = (vector * column)
+
+        val value0 = result.reduceLanes(VectorOperators.ADD, mask0)
+        val value1 = result.reduceLanes(VectorOperators.ADD, mask1)
+        val value2 = result.reduceLanes(VectorOperators.ADD, mask2)
+        val value3 = result.reduceLanes(VectorOperators.ADD, mask3)
+
+        val array = DoubleArray(4)
+
+        array[0] = value0.toDouble()
+        array[1] = value1.toDouble()
+        array[2] = value2.toDouble()
+        array[3] = value3.toDouble()
+
+        return DoubleTuple(array)
     }
 
     fun subMatrix(row: Int, column: Int): Matrix<*> {
@@ -158,7 +179,7 @@ class Matrix<D : Dimension> private constructor(
                     else -> 0f
                 }
             }
-            val factors = FloatVector.fromArray(Tuple.SPECIES, floatArray, 0)
+            val factors = FloatVector.fromArray(FloatTuple.SPECIES, floatArray, 0)
             row.mul(factors).reduceLanes(VectorOperators.ADD)
         }
     }
@@ -190,6 +211,8 @@ class Matrix<D : Dimension> private constructor(
         }
 
         fun D4(vararg array: Float): Matrix<D4> = Matrix(array, D4)
+
+        fun D4(vararg array: Number): Matrix<D4> = Matrix(FloatArray(16) { array[it].toFloat() }, D4)
 
         private val mask0 = buildVectorMask(0)
         private val mask1 = buildVectorMask(1)

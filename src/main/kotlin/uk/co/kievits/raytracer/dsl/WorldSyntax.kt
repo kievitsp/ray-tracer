@@ -6,11 +6,14 @@ import uk.co.kievits.raytracer.base.Colors.BLACK
 import uk.co.kievits.raytracer.base.D4
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.Point
+import uk.co.kievits.raytracer.base.toV
 import uk.co.kievits.raytracer.light.PointLight
 import uk.co.kievits.raytracer.material.Material
 import uk.co.kievits.raytracer.material.Pattern
+import uk.co.kievits.raytracer.shape.Cone
 import uk.co.kievits.raytracer.shape.Cube
 import uk.co.kievits.raytracer.shape.Cylinder
+import uk.co.kievits.raytracer.shape.CylinderLike
 import uk.co.kievits.raytracer.shape.Plane
 import uk.co.kievits.raytracer.shape.Shape
 import uk.co.kievits.raytracer.shape.Sphere
@@ -62,10 +65,17 @@ class WorldSyntax(
         CylinderSyntax(this).init()
         world.shapes.add(this)
     }
+
+    inline fun cone(
+        init: Syntax<CylinderSyntax> = {}
+    ): Cone = Cone().apply {
+        CylinderSyntax(this).init()
+        world.shapes.add(this)
+    }
 }
 
 open class CylinderSyntax(
-    override val shape: Cylinder,
+    override val shape: CylinderLike,
 ) : ShapeSyntax(shape) {
 
     var closed
@@ -76,12 +86,12 @@ open class CylinderSyntax(
     var minimum: Number
         get() = shape.minimum
         set(value) {
-            shape.minimum = value.toFloat()
+            shape.minimum = value.toV()
         }
     var maximum: Number
         get() = shape.maximum
         set(value) {
-            shape.maximum = value.toFloat()
+            shape.maximum = value.toV()
         }
 }
 
@@ -91,19 +101,19 @@ open class ShapeSyntax(
     val glass: Material
         get() = Material(
             color = BLACK,
-            transparency = 1.0f,
-            refractiveIndex = 1.5f,
-            reflective = 1.0f,
-            diffuse = .01f,
-            ambient = .01f,
-            specular = 1.0f,
-            shininess = 300.0f,
+            transparency = 1.0,
+            refractiveIndex = 1.5,
+            reflective = 1.0,
+            diffuse = .01,
+            ambient = .01,
+            specular = 1.0,
+            shininess = 300.0,
 //            shadeRatio = .1f
         )
     val mirror: Material
         get() = Material(
             color = BLACK,
-            reflective = 1.0f,
+            reflective = 1.0,
         )
 
     var material: Material
@@ -145,41 +155,41 @@ value class MaterialSyntax(
     var ambient: Number
         get() = material.ambient
         set(value) {
-            material.ambient = value.toFloat()
+            material.ambient = value.toV()
         }
 
     var diffuse: Number
         get() = material.diffuse
         set(value) {
-            material.diffuse = value.toFloat()
+            material.diffuse = value.toV()
         }
 
     var specular: Number
         get() = material.specular
         set(value) {
-            material.specular = value.toFloat()
+            material.specular = value.toV()
         }
 
     var shininess: Number
         get() = material.shininess
         set(value) {
-            material.shininess = value.toFloat()
+            material.shininess = value.toV()
         }
 
     var reflective: Number
         get() = material.reflective
         set(value) {
-            material.reflective = value.toFloat()
+            material.reflective = value.toV()
         }
 
     var transparency: Number
         get() = material.transparency
         set(value) {
-            material.transparency = value.toFloat()
+            material.transparency = value.toV()
         }
     var refractiveIndex: Number
         get() = material.refractiveIndex
         set(value) {
-            material.refractiveIndex = value.toFloat()
+            material.refractiveIndex = value.toV()
         }
 }

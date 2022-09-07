@@ -5,7 +5,7 @@ import uk.co.kievits.raytracer.base.IdentityMatrix
 import uk.co.kievits.raytracer.base.Matrix
 import uk.co.kievits.raytracer.base.POINT
 import uk.co.kievits.raytracer.base.Ray
-import uk.co.kievits.raytracer.base.Tuple
+import uk.co.kievits.raytracer.base.TUPLE
 import uk.co.kievits.raytracer.material.Material
 
 class TestShape(
@@ -15,7 +15,7 @@ class TestShape(
     var savedPoint: POINT? = null
     var savedRay: Ray? = null
 
-    override fun localNormalAt(p: POINT): Tuple {
+    override fun localNormalAt(p: POINT): TUPLE {
         savedPoint = p
         return p
     }

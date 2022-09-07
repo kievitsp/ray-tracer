@@ -17,64 +17,55 @@ import uk.co.kievits.raytracer.world.Camera
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.math.PI
+import kotlin.math.min
 import kotlin.system.exitProcess
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
+import kotlinx.coroutines.runBlocking
+import uk.co.kievits.raytracer.base.Colors.BLUE
+import uk.co.kievits.raytracer.base.Colors.GREEN
 
 @OptIn(ExperimentalTime::class)
 fun main() {
     val world = world {
-        plane {
-            transform = translation(z = 5) * rotationX(PI / 2)
+        cube {
+            transform = scaling(20)
             material {
                 pattern = CheckeredPattern(WHITE, BLACK).apply {
-                    transform = scaling(0.1, 0.1, .1)
+                    transform = scaling(.05)
                 }
-                reflective = .05
+                reflective = 0.03
             }
         }
 
-        sphere {
-            transform = translation(x = -0, y = 1) * scaling(1.5)
-            material = glass
-        }
+        cone {
+            maximum = 0
+            minimum = -1
+            transform = translation(y = 3)
 
-        sphere {
-            transform = translation(x = 2, y = 2) * scaling(.5)
-            material = mirror
-        }
-
-        sphere {
-            transform = translation(x = 2, y = 2, z = 5) * scaling(.5)
             material {
                 color = RED
+                reflective = 0.03
             }
         }
-
-        cube {
-            transform = translation(x = -2, y = 0) * scaling(.5)
-            material {
-                color = Color(0, 1, 0)
-                reflective = .10
-            }
-        }
-
         cylinder {
-            transform = translation(x = -2, y = 2) * scaling(.5)
+            maximum = 2
+            minimum = -1
+            material = glass
+        }
+        cube {
+            transform = translation(y = -2)
             material {
-                color = Color(0, 0, 1)
-                reflective = .10
+                color = BLUE
+                reflective = .25
             }
-            closed = true
-            minimum = -2
-            maximum = 0
         }
     }
 
     val camera = Camera(
         hSize = 800,
         vSize = 600,
-        fieldOfView = PI / 3,
+        fieldOfView = PI / 2,
     )
 
     camera.transform = viewTransformation(
@@ -84,17 +75,17 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-        Thread.sleep(10_000)
-        camera.render(world, ImageType.PNG)
-//        runBlocking {
+//        Thread.sleep(10_000)
+//        camera.render(world, ImageType.PNG)
+        runBlocking {
 //            delay(10_000)
-//            camera.renderAsync(world, ImageType.PNG)
-//        }
+            camera.renderAsync(world, ImageType.PNG)
+        }
     }
 
     println("async time $aSyncTime")
 
-    val path = Paths.get("./chapter9a.png")
+    val path = Paths.get("./chapter13.png")
 
     Files.newOutputStream(path).use {
         image.write(it)

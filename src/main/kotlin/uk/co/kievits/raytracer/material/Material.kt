@@ -101,12 +101,12 @@ data class Material(
 
     companion object {
         private val defaultColor: COLOR = Color(1, 1, 1)
-        private const val defaultAmbient: V = 0.1f
-        private const val defaultDiffuse: V = 0.9f
-        private const val defaultSpecular: V = 0.9f
-        private const val defaultShininess: V = 200f
-        private const val defaultReflective: V = 0f
-        private const val defaultTransparency: V = 0f
-        private const val defaultRefractiveIndex: V = 1f
+        private const val defaultAmbient: V = 0.1
+        private const val defaultDiffuse: V = 0.9
+        private const val defaultSpecular: V = 0.9
+        private const val defaultShininess: V = 200.0
+        private const val defaultReflective: V = 0.0
+        private const val defaultTransparency: V = 0.0
+        private const val defaultRefractiveIndex: V = 1.0
     }
 }

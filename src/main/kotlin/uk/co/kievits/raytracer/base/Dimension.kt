@@ -12,7 +12,7 @@ typealias D4 = Dimension.D4
 sealed class Dimension(
     val size: Int,
     val width: Int,
-    val species: VectorSpecies<V>,
+    val species: VectorSpecies<Float>,
     val sub: Dimension?,
 ) {
 
@@ -49,7 +49,7 @@ sealed class Dimension(
         VectorShuffle.fromArray(species, array, 0)
     }
 
-    internal val subArrayShuffle: List<List<VectorShuffle<V>>> = when (sub) {
+    internal val subArrayShuffle: List<List<VectorShuffle<Float>>> = when (sub) {
         null -> emptyList()
         else -> {
             (0 until width)

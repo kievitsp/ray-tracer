@@ -84,15 +84,15 @@ data class World(
         remaining: Int = Int.MAX_VALUE,
     ): COLOR {
         val transparency = comps.shape.material.transparency
-        if (transparency == 0f || remaining <= 0) return BLACK
+        if (transparency == 0.0 || remaining <= 0) return BLACK
 
         val nRatio = comps.n1 / comps.n2
         val cosI = comps.eyeV dot comps.normalV
         val sin2t = nRatio.pow(2) * (1 - cosI.pow(2))
 
-        if (sin2t > 1f) return BLACK
+        if (sin2t > 1) return BLACK
 
-        val cosT = sqrt(1f - sin2t)
+        val cosT = sqrt(1 - sin2t)
         val direction = comps.normalV * (nRatio * cosI - cosT) - comps.eyeV * nRatio
         val refractedRay = Ray(comps.underPoint, direction)
 
@@ -130,11 +130,11 @@ data class World(
             shapes = mutableListOf(
                 Sphere().apply {
                     material.color = Color(0.8, 1.0, 0.6)
-                    material.diffuse = 0.7f
-                    material.specular = 0.2f
+                    material.diffuse = 0.7
+                    material.specular = 0.2
                 },
                 Sphere().apply {
-                    transform = scaling(0.5f, 0.5f, 0.5f)
+                    transform = scaling(0.5, 0.5, 0.5)
                 }
             ),
             light = PointLight(

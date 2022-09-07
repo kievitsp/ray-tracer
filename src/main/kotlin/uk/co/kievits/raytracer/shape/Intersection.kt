@@ -23,13 +23,13 @@ data class Intersection(
 
         val containers = mutableListOf<Shape>()
 
-        var n1: Float = -1f
-        var n2: Float = -1f
+        var n1: V = -1.0
+        var n2: V = -1.0
 
         for (i in intersections) {
             if (i == this) {
                 n1 = when {
-                    containers.isEmpty() -> 1f
+                    containers.isEmpty() -> 1.0
                     else -> containers.last().material.refractiveIndex
                 }
             }
@@ -39,7 +39,7 @@ data class Intersection(
             }
             if (i == this) {
                 n2 = when {
-                    containers.isEmpty() -> 1f
+                    containers.isEmpty() -> 1.0
                     else -> containers.last().material.refractiveIndex
                 }
             }

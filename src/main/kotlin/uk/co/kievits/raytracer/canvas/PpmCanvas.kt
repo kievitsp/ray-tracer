@@ -2,7 +2,6 @@ package uk.co.kievits.raytracer.canvas
 
 import uk.co.kievits.raytracer.base.COLOR
 import uk.co.kievits.raytracer.base.Colors
-import uk.co.kievits.raytracer.base.bitValue
 import java.io.BufferedWriter
 import java.io.CharArrayWriter
 import java.io.OutputStream
@@ -12,7 +11,7 @@ import java.io.Writer
 class PpmCanvas(
     override val width: Int,
     override val height: Int,
-) : Canvas {
+) : Canvas() {
     private val data = Array(height * width) {
         Colors.BLACK
     }

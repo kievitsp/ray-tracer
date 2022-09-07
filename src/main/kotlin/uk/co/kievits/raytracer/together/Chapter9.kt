@@ -31,7 +31,7 @@ fun main() {
                     StripedPattern(BLACK, WHITE) + StripedPattern(BLACK, WHITE)
                         .apply { transform = rotationZ(PI / 4) }
                     ) / 2
-                specular = 0f
+                specular = 0
                 reflective = 0.05
             }
         }
@@ -55,8 +55,8 @@ fun main() {
                     transform = rotationY(PI / 3) * rotationZ(PI / 5) *
                         scaling(0.1, 0.1, 0.1)
                 }.perturbed()
-                diffuse = 0.7f
-                specular = 0.3f
+                diffuse = 0.7
+                specular = 0.3
                 reflective = .1
             }
         }
@@ -65,8 +65,8 @@ fun main() {
             transform = translation(1.5, 0.5, -.5) * scaling(0.5, 0.5, 0.5)
             material {
                 color = BLACK
-                diffuse = 0.7f
-                specular = 0.3f
+                diffuse = 0.7
+                specular = 0.3
                 reflective = 1
             }
         }
@@ -85,7 +85,7 @@ fun main() {
     val camera = Camera(
         hSize = 800,
         vSize = 600,
-        fieldOfView = (PI / 3).toFloat(),
+        fieldOfView = PI / 3,
     )
 
     camera.transform = viewTransformation(
