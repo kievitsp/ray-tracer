@@ -33,11 +33,11 @@ data class World(
         }
 
     fun intersections(ray: Ray): Intersections = Intersections(
-        hits = shapes.asSequence()
+        hits = shapes
+            .asSequence()
             .flatMap { it.intersections(ray) }
-            .sortedBy { it.t }
-            .toList(),
-        isSorted = true
+            .toMutableList(),
+        isSorted = false
     )
 
     fun shadeHit(

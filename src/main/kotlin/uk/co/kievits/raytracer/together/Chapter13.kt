@@ -1,7 +1,7 @@
 package uk.co.kievits.raytracer.together
 
-import uk.co.kievits.raytracer.base.Color
 import uk.co.kievits.raytracer.base.Colors.BLACK
+import uk.co.kievits.raytracer.base.Colors.BLUE
 import uk.co.kievits.raytracer.base.Colors.RED
 import uk.co.kievits.raytracer.base.Colors.WHITE
 import uk.co.kievits.raytracer.base.Point
@@ -12,18 +12,14 @@ import uk.co.kievits.raytracer.base.translation
 import uk.co.kievits.raytracer.base.viewTransformation
 import uk.co.kievits.raytracer.canvas.ImageType
 import uk.co.kievits.raytracer.dsl.world
-import uk.co.kievits.raytracer.material.CheckeredPattern
+import uk.co.kievits.raytracer.material.StripedPattern
 import uk.co.kievits.raytracer.world.Camera
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.math.PI
-import kotlin.math.min
 import kotlin.system.exitProcess
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
-import kotlinx.coroutines.runBlocking
-import uk.co.kievits.raytracer.base.Colors.BLUE
-import uk.co.kievits.raytracer.base.Colors.GREEN
 
 @OptIn(ExperimentalTime::class)
 fun main() {
@@ -31,8 +27,8 @@ fun main() {
         cube {
             transform = scaling(20)
             material {
-                pattern = CheckeredPattern(WHITE, BLACK).apply {
-                    transform = scaling(.05)
+                pattern = StripedPattern(WHITE, BLACK).apply {
+                    transform = scaling(.5) * rotationX(PI / 3)
                 }
                 reflective = 0.03
             }
@@ -60,6 +56,14 @@ fun main() {
                 reflective = .25
             }
         }
+        sphere {
+            material = mirror
+            transform = translation(x = -3)
+        }
+        sphere {
+            material = mirror
+            transform = translation(x = 3)
+        }
     }
 
     val camera = Camera(
@@ -75,12 +79,12 @@ fun main() {
     )
 
     val (image, aSyncTime) = measureTimedValue {
-//        Thread.sleep(10_000)
-//        camera.render(world, ImageType.PNG)
-        runBlocking {
+        Thread.sleep(10_000)
+        camera.render(world, ImageType.PNG)
+//        runBlocking {
 //            delay(10_000)
-            camera.renderAsync(world, ImageType.PNG)
-        }
+//            camera.renderAsync(world, ImageType.PNG)
+//        }
     }
 
     println("async time $aSyncTime")

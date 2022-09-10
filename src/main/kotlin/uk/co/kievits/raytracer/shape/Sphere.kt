@@ -29,8 +29,8 @@ class Sphere(
 
         return when {
             discrimant < 0 -> Intersections.Miss
-            else -> Intersections.Hits(
-                hits = listOf(
+            else -> Intersections(
+                hits = mutableListOf(
                     Intersection((-b - sqrt(discrimant)) / (2 * a), this),
                     Intersection((-b + sqrt(discrimant)) / (2 * a), this),
                 ),

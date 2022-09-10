@@ -19,8 +19,9 @@ abstract class Pattern(
 
     open fun atShape(shape: Shape, point: POINT): COLOR {
         val shapePoint = shape.transform.inverse.transpose * point
-        val patternPoint = transform.inverse.transpose * shapePoint
-        return atPattern(patternPoint)
+        // todo fix patterns..
+//        val patternPoint = transform.inverse.transpose * shapePoint
+        return atPattern(shapePoint)
     }
 
     fun perturbed(ratio: Number = 1f) = PerturbedPattern(this, ratio.toFloat())

@@ -83,20 +83,23 @@ class ShapeSteps : En {
             when (values) {
                 null -> SharedVars["xs"]
                 else -> {
-                    val intersections = when {
+                    val intersections: MutableList<Intersection> = when {
                         ":" in values -> values.split(",")
                             .map { it.trim() }
                             .map {
                                 val split = it.split(":")
                                 Intersection(parseFloat(split[0]), SharedVars[split[1]])
                             }
+                            .toMutableList()
 
-                        else -> values.split(',').map { SharedVars[it.trim()] }
+                        else -> values.split(',')
+                            .map { SharedVars.get<Intersection>(it.trim()) }
+                            .toMutableList()
                     }
 
                     when {
                         intersections.isEmpty() -> Intersections.Miss
-                        else -> Intersections.Hits(intersections)
+                        else -> Intersections(intersections)
                     }
                 }
             }

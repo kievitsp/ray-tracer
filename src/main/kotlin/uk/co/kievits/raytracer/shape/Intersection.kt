@@ -7,7 +7,10 @@ import uk.co.kievits.raytracer.base.V
 data class Intersection(
     val t: V,
     val shape: Shape,
-) {
+) : Comparable<Intersection> {
+
+    override fun compareTo(other: Intersection): Int = t.compareTo(other.t)
+
     fun precompute(
         ray: Ray,
         intersections: Intersections,

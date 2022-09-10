@@ -35,7 +35,7 @@ class Cube : Shape() {
         return when {
             tMin > tMax -> Intersections.Miss
             else -> Intersections(
-                listOf(
+                mutableListOf(
                     Intersection(tMin, this),
                     Intersection(tMax, this),
                 ),

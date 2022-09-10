@@ -46,7 +46,7 @@ class Cone : CylinderLike() {
 
         if (closed) intersectCaps(ray, xs)
 
-        return Intersections(xs, true)
+        return Intersections(xs)
     }
 
     override fun checkCaps(

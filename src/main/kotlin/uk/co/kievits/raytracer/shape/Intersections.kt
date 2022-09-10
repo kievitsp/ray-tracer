@@ -19,29 +19,37 @@ sealed class Intersections : List<Intersection> {
         override fun hit(): Intersection? = null
     }
 
-    data class Hits private constructor(
-        val hits: List<Intersection>
+    data class Hits(
+        val hits: MutableList<Intersection>
     ) : Intersections(), List<Intersection> by hits {
         override fun plus(
             other: Intersections
         ): Intersections = when (other) {
-            is Hits -> invoke(hits + other.hits)
-            Miss -> this
-            else -> this
+            is Hits -> {
+                hits.addAll(other)
+                hits.sort()
+                this
+            }
+            Miss -> {
+                this
+            }
+            else -> {
+                this
+            }
         }
 
         override fun hit(): Intersection? = hits
             .firstOrNull { it.t >= 0f }
 
-        companion object {
-            operator fun invoke(
-                hits: List<Intersection>,
-                isSorted: Boolean = false,
-            ): Hits = when (isSorted) {
-                true -> Hits(hits)
-                else -> Hits(hits.sortedBy { it.t })
-            }
-        }
+//        companion object {
+//            operator fun invoke(
+//                hits: MutableList<Intersection>,
+//                isSorted: Boolean = false,
+//            ): Hits = when (isSorted) {
+//                true -> Hits(hits)
+//                else -> Hits(hits.sortedBy { it.t })
+//            }
+//        }
     }
 
     companion object {
@@ -49,17 +57,20 @@ sealed class Intersections : List<Intersection> {
             t: V,
             shape: Shape,
         ): Intersections = Intersections.Hits(
-            listOf(Intersection(t, shape))
+            mutableListOf(Intersection(t, shape))
         )
 
         operator fun invoke(
-            hits: List<Intersection>,
+            hits: MutableList<Intersection>,
             isSorted: Boolean = false,
         ): Intersections = when (hits.isEmpty()) {
             true -> Miss
             false -> when (isSorted) {
                 true -> Hits(hits)
-                false -> Hits(hits.sortedBy { it.t })
+                false -> {
+                    hits.sort()
+                    Hits(hits)
+                }
             }
         }
     }
